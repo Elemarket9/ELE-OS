@@ -2,3 +2,11 @@ cc_library_headers {
     name: "libele_resource_policy_headers",
     export_include_dirs: ["."],
 }
+
+cc_binary {
+    name: "ele-resource",
+    product_specific: true,
+    srcs: ["main.cpp", "telemetry.cpp"],
+    cpp_std: "c++17",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

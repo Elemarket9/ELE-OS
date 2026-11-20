@@ -16,3 +16,10 @@ sh tests/ota.sh
 "$cxx" -std=c++17 -Wall -Wextra -Werror -Iresource tests/resource_policy.cpp -o "$tmp/resource_policy"
 "$tmp/resource_policy"
 printf 'Resource advisory policy checks passed\n'
+"$cxx" -std=c++17 -Wall -Wextra -Werror -Iresource resource/telemetry.cpp tests/telemetry.cpp -o "$tmp/telemetry"
+"$tmp/telemetry"
+"$cxx" -std=c++17 -Wall -Wextra -Werror -pthread -Iresource resource/telemetry.cpp resource/main.cpp -o "$tmp/ele-resource"
+"$tmp/ele-resource" > "$tmp/resource-report"
+[ "$(wc -l < "$tmp/resource-report")" -eq 4 ]
+[ "$(grep -c 'thermal=unknown background_allowed=no$' "$tmp/resource-report")" -eq 4 ]
+python3 tests/capability_registry.py
