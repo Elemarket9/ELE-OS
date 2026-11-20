@@ -61,6 +61,15 @@ def verify_config(text, arch):
         raise ValueError("missing/incorrect kernel options: " + ", ".join(bad))
 
 
+def verify_release(release):
+    # The throwaway worktree is intentionally modified by the ELE overlay.
+    # Preserve the upstream SCM dirty marker instead of mislabeling the
+    # derived build as an unmodified upstream release.
+    expected = PIN["version"] + PIN["localversion"] + "-dirty"
+    if release != expected:
+        raise ValueError("unexpected kernel release: " + release)
+
+
 def check_source(source):
     if capture("git", "rev-parse", "HEAD", cwd=source) != PIN["commit"]:
         raise ValueError("source HEAD does not match pinned upstream commit")
@@ -153,8 +162,7 @@ def build(source, output, arch, jobs, cross):
             run(*make, "olddefconfig")
             verify_config((obj / ".config").read_text(), arch)
             release = capture(*make, "-s", "kernelrelease")
-            if release != PIN["version"] + PIN["localversion"]:
-                raise ValueError("unexpected kernel release: " + release)
+            verify_release(release)
             run(*make, f"-j{jobs}", ARCHES[arch][1], "modules")
             run(*make, f"INSTALL_MOD_PATH={stage}", "modules_install")
             # Never package links pointing to the temporary source/build tree.
