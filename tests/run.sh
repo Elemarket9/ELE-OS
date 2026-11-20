@@ -11,4 +11,8 @@ cxx=${CXX:-c++}
     tests/reactivation.cpp -lcrypto -o "$tmp/session"
 mkdir "$tmp/fixture"
 "$tmp/session" "$tmp/fixture"
+for extra in tests/host-*.sh; do
+    [ -f "$extra" ] || continue
+    sh "$extra"
+done
 sh tests/status.sh
