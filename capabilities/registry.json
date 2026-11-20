@@ -2384,16 +2384,24 @@
       "subsystem": "Networking and internet",
       "functional_requirements": "Collect bounded per-interface counters and connection-state events.",
       "architectural_dependencies": "sockets, device drivers, identity and firewall",
-      "implementation_paths": [],
-      "workstream": "Networking and internet",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Reconcile diagnostic counters and verify sensitive payloads are not logged.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/NetworkActivity.java",
+        "peripherals/src/org/eleos/peripherals/LinkRate.java",
+        "tests/LinkRateTest.java"
       ],
-      "commit_references": []
+      "workstream": "Networking and internet",
+      "integration_interfaces": [
+        "Android ConnectivityManager, LinkProperties, TrafficStats; elapsedRealtime"
+      ],
+      "security_considerations": "Foreground only and local; no probes, no packet capture, DNS/IP identifiers or subscriber data; no elevated permission.",
+      "verification_requirements": "Reconcile diagnostic counters and verify sensitive payloads are not logged.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Per-interface observations are partial; default-route events and physical mixed-network validation remain outstanding."
+      ],
+      "commit_references": [
+        "485952682a7f5d57b3562d91ff163393a87b7a2a"
+      ]
     },
     {
       "id": "EOS-136",
