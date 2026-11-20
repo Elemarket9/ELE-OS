@@ -68,8 +68,11 @@ advance.
 This repository is the overlay at `device/ele/os`. It registers one virtual
 product:
 
-- `AndroidProducts.mk` adds the lunch target
-  `ele_os_cf_x86_64-trunk_staging-userdebug`.
+- `AndroidProducts.mk` registers `ele_os_cf_build.mk`, which inherits
+  `ele_os_cf_x86_64.mk`. The lunch target is
+  `ele_os_cf_x86_64-aosp_current-userdebug`. `android-16.0.0_r1` has no
+  `trunk_staging` release config; `aosp_current` is the alias that tag maps
+  to `bp2a`. `lunch` has not been run.
 - `ele_os_cf_x86_64.mk` inherits
   `device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk` and adds
   `ele-status` to the default image. `ElePeripherals` stays in the tree and

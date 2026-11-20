@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Local manifest for the ELE-OS overlay.
+
+  PROTOTYPE. This file has not been used to sync or build an image.
+  The AOSP tag is manifest/aosp-tag: android-16.0.0_r1.
+
+  From an empty directory, with Google's repo tool installed:
+
+    repo init -u https://android.googlesource.com/platform/manifest \
+        -b android-16.0.0_r1
+    mkdir -p .repo/local_manifests
+    cp manifest/ele-os-local.xml .repo/local_manifests/ele-os.xml
+    repo sync -c
+
+  Copy the manifest from a checkout of this repository. repo then checks
+  this overlay out at device/ele/os. Do not also git clone into that path.
+
+  The only project added here is that overlay. This file does not add a
+  phone device tree, a vendor blob repository, or a signing key. The
+  kernel stays in the upstream kernel projects (GPL-2.0) and is not
+  copied into this repository.
+-->
+<manifest>
+  <remote name="github" fetch="https://github.com" />
+  <project
+      name="Elemarket9/ELE-OS"
+      path="device/ele/os"
+      remote="github"
+      revision="refs/heads/main" />
+</manifest>
