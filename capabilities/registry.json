@@ -70,7 +70,8 @@
         "AOSP compilation/boot and supported policy integration not verified; acceptance criteria remain open."
       ],
       "commit_references": [
-        "0136a698e323b74bf7ecbec60abd6664686c13b3"
+        "0136a698e323b74bf7ecbec60abd6664686c13b3",
+        "0bab8ae3507636b4f882cd7ae609446944cfe4c8"
       ]
     },
     {
@@ -351,16 +352,24 @@
       "subsystem": "Kernel and CPU management",
       "functional_requirements": "Select architecture-specific primitives behind stable interfaces and feature detection.",
       "architectural_dependencies": "architecture port, interrupts and clocks",
-      "implementation_paths": [],
-      "workstream": "Kernel and CPU management",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Boot and execute core tests on each supported architecture; reject unsupported features safely.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "AndroidProducts.mk",
+        "ele_os_gsi_arm64.mk",
+        "ele_os_cf_x86_64.mk"
       ],
-      "commit_references": []
+      "workstream": "Kernel and CPU management",
+      "integration_interfaces": [
+        "AOSP product inheritance; ARM64 Treble and x86-64 Cuttlefish targets"
+      ],
+      "security_considerations": "Development public test keys only; vendor firmware and kernel remain device-specific.",
+      "verification_requirements": "Boot and execute core tests on each supported architecture; reject unsupported features safely.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Kernel architecture ports and CPU feature selection remain unverified; no full image build."
+      ],
+      "commit_references": [
+        "78b92c30003ed6e63be4809cf78c1e0656c6196c"
+      ]
     },
     {
       "id": "EOS-021",
@@ -589,16 +598,25 @@
       "subsystem": "Memory management",
       "functional_requirements": "Select eligible victims only after reclaim fails, using importance and resource use.",
       "architectural_dependencies": "MMU, page tables and kernel synchronization",
-      "implementation_paths": [],
-      "workstream": "Memory management",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Trigger exhaustion; verify predictable victim choice and recovery.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "products/low_ram.mk",
+        "products/memory_low_ram.mk",
+        "ele_os_cf_x86_64_low_ram.mk",
+        "ele_os_gsi_low_ram_arm64.mk"
       ],
-      "commit_references": []
+      "workstream": "Memory management",
+      "integration_interfaces": [
+        "AOSP ro.config.low_ram; upstream lmkd policy; ART product flags"
+      ],
+      "security_considerations": "Preserve AOSP process importance and platform defaults; do not tune thresholds without measurements.",
+      "verification_requirements": "Trigger exhaustion; verify predictable victim choice and recovery.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "No application/task kill policy changes beyond upstream mode; pressure and foreground survival tests on platform outstanding."
+      ],
+      "commit_references": [
+        "78b92c30003ed6e63be4809cf78c1e0656c6196c"
+      ]
     },
     {
       "id": "EOS-035",
@@ -1422,16 +1440,25 @@
       "subsystem": "Security and privacy",
       "functional_requirements": "Check update signature, version policy and hardware compatibility before staging.",
       "architectural_dependencies": "hardware roots where available, OS identity and storage",
-      "implementation_paths": [],
-      "workstream": "Security and privacy",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Reject forged, incompatible and disallowed rollback packages.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "ota/metadata.cpp",
+        "ota/client.cpp",
+        "ota/client_main.cpp",
+        "tests/ota_client.sh"
       ],
-      "commit_references": []
+      "workstream": "Security and privacy",
+      "integration_interfaces": [
+        "Host test-key signature, digest, target/product and version selection"
+      ],
+      "security_considerations": "Descriptor-relative opens, bounded file sizes, test keys never authorize production updates.",
+      "verification_requirements": "Reject forged, incompatible and disallowed rollback packages.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Production trust anchors, verified compatibility and update staging not implemented."
+      ],
+      "commit_references": [
+        "a7055664c0346dc67038bf1ee69879760cc53fd6"
+      ]
     },
     {
       "id": "EOS-084",
@@ -3598,16 +3625,23 @@
       "subsystem": "External hardware and drivers",
       "functional_requirements": "Enumerate supported buses and identify devices through validated descriptors.",
       "architectural_dependencies": "bus support, IOMMU, security and platform firmware",
-      "implementation_paths": [],
-      "workstream": "External hardware and drivers",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Hot-plug supported devices; reject malformed descriptors without crashing.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/DevicesActivity.java",
+        "peripherals/src/org/eleos/peripherals/PeripheralKinds.java"
       ],
-      "commit_references": []
+      "workstream": "External hardware and drivers",
+      "integration_interfaces": [
+        "Android UsbManager, AudioManager and DisplayManager public APIs"
+      ],
+      "security_considerations": "Owner-visible, local enumeration; no USB access grant or device serial/media read.",
+      "verification_requirements": "Hot-plug supported devices; reject malformed descriptors without crashing.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Android SDK compile and platform/device discovery validation outstanding; no driver binding or hotplug service."
+      ],
+      "commit_references": [
+        "b6c05b7bdd3d9cd3ff3dda0c752cf04139631b36"
+      ]
     },
     {
       "id": "EOS-212",
@@ -3734,16 +3768,23 @@
       "subsystem": "External hardware and drivers",
       "functional_requirements": "Support compatible PTP, UVC or vendor-approved interfaces for camera control/import.",
       "architectural_dependencies": "bus support, IOMMU, security and platform firmware",
-      "implementation_paths": [],
-      "workstream": "External hardware and drivers",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Demonstrate capture/import/control only on explicitly supported camera models.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/DevicesActivity.java",
+        "peripherals/src/org/eleos/peripherals/AspectSurfaceView.java"
       ],
-      "commit_references": []
+      "workstream": "External hardware and drivers",
+      "integration_interfaces": [
+        "Android Camera2 external lens preview; USB class hints"
+      ],
+      "security_considerations": "Camera permission only on user request; stop preview when backgrounded or surface lost.",
+      "verification_requirements": "Demonstrate capture/import/control only on explicitly supported camera models.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Hardware-specific UVC and PTP/MTP operations and camera compatibility not verified."
+      ],
+      "commit_references": [
+        "b6c05b7bdd3d9cd3ff3dda0c752cf04139631b36"
+      ]
     },
     {
       "id": "EOS-220",
@@ -5706,7 +5747,8 @@
         "AOSP compilation/boot and supported policy integration not verified; acceptance criteria remain open."
       ],
       "commit_references": [
-        "0136a698e323b74bf7ecbec60abd6664686c13b3"
+        "0136a698e323b74bf7ecbec60abd6664686c13b3",
+        "0bab8ae3507636b4f882cd7ae609446944cfe4c8"
       ]
     },
     {
@@ -5800,7 +5842,8 @@
         "AOSP compilation/boot and supported policy integration not verified; acceptance criteria remain open."
       ],
       "commit_references": [
-        "0136a698e323b74bf7ecbec60abd6664686c13b3"
+        "0136a698e323b74bf7ecbec60abd6664686c13b3",
+        "0bab8ae3507636b4f882cd7ae609446944cfe4c8"
       ]
     },
     {
@@ -5959,10 +6002,11 @@
       "verification_requirements": "Verify measurement accuracy, bounded overhead and opt-out policy.",
       "status": "In development",
       "outstanding_blockers": [
-        "AOSP compilation/boot and supported policy integration not verified; acceptance criteria remain open."
+        "Aggregate CPU and memory only; latency, energy, throughput accuracy and opt-out verification incomplete."
       ],
       "commit_references": [
-        "0136a698e323b74bf7ecbec60abd6664686c13b3"
+        "0136a698e323b74bf7ecbec60abd6664686c13b3",
+        "0bab8ae3507636b4f882cd7ae609446944cfe4c8"
       ]
     },
     {

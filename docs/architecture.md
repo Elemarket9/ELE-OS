@@ -76,8 +76,7 @@ an arm64 Treble GSI, and a low-RAM class of each. No phone is named.
   to `bp2a`. `lunch` has not been run.
 - `ele_os_cf_x86_64.mk` inherits
   `device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk` and adds
-  `ele-status` and `ele-resource` to the default image. `ElePeripherals` stays in the tree and
-  is not installed unless a local build adds it. `ele_os_cf_build.mk` keeps
+  `ele-status` and `ele-resource` to the default image. `ElePeripherals` is registered in the debug package list; its USB inventory and camera preview are not device verified. `ele_os_cf_build.mk` keeps
   that product name, labels the image as a test-key prototype, and does not
   set the low-RAM switch.
 - `ele_os_gsi_arm64.mk` inherits AOSP's arm64 generic system image and
