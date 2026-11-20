@@ -15,19 +15,19 @@
       "target_pin": "kernel/native/upstream.json",
       "source_present": true,
       "build_overlay_present": true,
-      "compiled": false,
+      "compiled": true,
       "integrated": true,
-      "runtime_verified": false,
+      "runtime_verified": true,
       "hardware_verified": false,
       "evidence": [
         "kernel/native/build.py",
         "kernel/native/BUILD.md",
         ".github/workflows/native-kernel.yml"
       ],
-      "compile_status": "Build and boot workflow is running or queued for the current PR revision.",
-      "integration_status": "Overlay integrated by the experimental builder; PR #33 is not merged to main.",
-      "merged_to_main": false,
-      "runtime_status": "Awaiting x86_64 QEMU smoke stage."
+      "compile_status": "Linux v7.3.5 ELE overlay compiled successfully for x86_64 in GitHub Actions run 44740044884.",
+      "integration_status": "Merged to main in commit 631ec815d119359a3cf56b980b6f92d3f38e802d.",
+      "merged_to_main": true,
+      "runtime_status": "Exact built image booted in QEMU. Smoke passed checks for pressure/PSI ABI, default unprivileged-BPF restriction, RWX mmap/mprotect denial, and unsigned module rejection. x86_64 virtual coverage only."
     },
     "android_common_kernel": {
       "target": "common-android17-6.18",
@@ -52,24 +52,25 @@
       "id": "ELE-MemSafe-pressure",
       "scope": "Global memory-pressure classification and telemetry",
       "source_present": true,
-      "compiled": false,
+      "compiled": true,
       "integrated": true,
-      "runtime_verified": false,
+      "runtime_verified": true,
       "hardware_verified": false,
       "enforcement": "Advisory telemetry only; does not reclaim memory, compress pages, or control OOM.",
       "evidence": [
         "kernel/native/pressure/ele_pressure.c",
         "kernel/native/pressure/ele_pressure_policy.h"
       ],
-      "integration_status": "Experimental native overlay; not merged into main"
+      "integration_status": "Built into the native Linux kernel and merged to main.",
+      "runtime_status": "QEMU smoke read a live pressure snapshot and PSI ABI; pressure-stress thresholds are not validated."
     },
     {
       "id": "ELE-MemSafe-wx",
       "scope": "Deny mappings requesting simultaneous write and execute",
       "source_present": true,
-      "compiled": false,
+      "compiled": true,
       "integrated": true,
-      "runtime_verified": false,
+      "runtime_verified": true,
       "hardware_verified": false,
       "enforcement": "Intended per-mapping denial only. Writable aliases, RW-to-RX JIT policy, architecture-specific behavior, and Android compatibility remain unverified.",
       "evidence": [
@@ -77,28 +78,30 @@
         "kernel/native/build.py",
         "kernel/native/smoke_init.c"
       ],
-      "integration_status": "Experimental native build injects checks in common security mmap/mprotect dispatch"
+      "integration_status": "Common mmap/mprotect security checks built into native kernel and merged to main.",
+      "runtime_status": "QEMU verified RWX mmap/mprotect denial and allowed RW-to-RX transition; physical alias protection remains unverified."
     },
     {
       "id": "ELE-Shield-module-signing",
       "scope": "Require authenticated kernel modules",
       "source_present": true,
-      "compiled": false,
+      "compiled": true,
       "integrated": true,
-      "runtime_verified": false,
+      "runtime_verified": true,
       "hardware_verified": false,
       "enforcement": "Build configuration plus QEMU test exists; actual build and rejection test pending.",
       "evidence": [
         "kernel/native/build.py",
         "kernel/native/smoke_init.c"
       ],
-      "integration_status": "Experimental build config enables forced module signatures"
+      "integration_status": "Forced module-signature configuration built into native kernel and merged to main.",
+      "runtime_status": "QEMU verified rejection of an unsigned malformed module; production key provisioning is absent."
     },
     {
       "id": "ELE-Shield-kernel-hardening",
       "scope": "Selected upstream kernel hardening options",
       "source_present": true,
-      "compiled": false,
+      "compiled": true,
       "integrated": true,
       "runtime_verified": false,
       "hardware_verified": false,
@@ -106,7 +109,8 @@
       "evidence": [
         "kernel/native/build.py"
       ],
-      "integration_status": "Experimental build config requests strict kernel/module RWX, KASLR, fortified copy, usercopy, slab hardening, and init-on-allocation"
+      "integration_status": "Selected hardening options built and extracted config validated; merged to main.",
+      "runtime_status": "Smoke checks unprivileged BPF default only. KASLR, slab hardening, stack protection, and other runtime effects were not separately exercised."
     },
     {
       "id": "ELE-Verify-secure-boot",
