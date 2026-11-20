@@ -1,7 +1,19 @@
 cc_library_static {
     name: "libele_ota",
-    srcs: ["metadata.cpp"],
+    srcs: [
+        "metadata.cpp",
+        "client.cpp",
+    ],
     cpp_std: "c++17",
     export_include_dirs: ["."],
     shared_libs: ["libcrypto"],
+}
+
+// Test-key channel verifier is host-only. Never install on a production image.
+cc_binary_host {
+    name: "ele-ota-client",
+    srcs: ["metadata.cpp", "client.cpp", "client_main.cpp"],
+    cpp_std: "c++17",
+    shared_libs: ["libcrypto"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
 }

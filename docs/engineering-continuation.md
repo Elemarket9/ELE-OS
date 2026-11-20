@@ -20,3 +20,5 @@ cryptographic component as device recovery. Record CI and hardware evidence
 separately. The baseline still requires a full pinned AOSP checkout and KVM.
 
 The ARM64 Treble GSI and low-RAM product configurations are registered in source. The low-RAM class uses upstream lmkd mode and ART build flags, not a measured memory or battery improvement. Both low-RAM products inherit shared settings once. GSI deployment must establish which product-partition artifacts can actually be installed on the specific device. Do not flash these test-key targets on an owner's production device.
+
+OTA: the test-key local verifier checks matching package versions, integrity and signatures; it deliberately does not install. It must not be connected to update_engine or trusted as a release client. The next integration requires signed AOSP target files, release trust anchors, and a genuine A/B update/recovery environment. Preserve descriptor-relative reads and resource caps.
