@@ -11,11 +11,11 @@ project's own targets:
 
 - **Cuttlefish** (`ele_os_cf_x86_64`) is the shared development target. The
   product makefile exists. A boot has not been recorded.
-- **A Treble GSI** is the hardware image, so one system build can boot on
-  many Treble-compliant phones. The product is not in this tree yet. The
-  intended target is `ele_os_gsi_arm64`. It installs the ELE-OS system on top
-  of the vendor image already on the phone. It does not replace that vendor
-  image, the kernel, or the firmware.
+- **A Treble GSI** (`ele_os_gsi_arm64`) is the hardware image, so one system
+  build can boot on many Treble-compliant phones. The product makefile is
+  registered. It has not been built, and a boot has not been recorded. It
+  installs the ELE-OS system on top of the vendor image already on the phone.
+  It does not replace that vendor image, the kernel, or the firmware.
 
 Per-device pages will live in `docs/devices/`. That directory has no device
 page yet. See [devices/README.md](devices/README.md). A page appears when a

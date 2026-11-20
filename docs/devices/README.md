@@ -3,8 +3,9 @@
 No handset has a page here. ELE-OS has no phone partner and no named first
 device.
 
-ELE-OS itself builds Cuttlefish and, once the product exists, a Treble GSI
-(`ele_os_gsi_arm64`). A GSI boot is written up as evidence. It does not add
+ELE-OS registers Cuttlefish and the Treble GSI `ele_os_gsi_arm64`.
+The GSI makefile has not been built. A GSI boot is written
+up as evidence. It does not add
 a device page and it does not make that phone supported.
 
 A phone maker or a porter adds `docs/devices/<codename>.md` by following the

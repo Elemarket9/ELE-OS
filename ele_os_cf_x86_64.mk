@@ -9,3 +9,6 @@ PRODUCT_MODEL := ELE-OS Virtual Phone
 # experiment and is left out of PRODUCT_PACKAGES on purpose. To try it in a
 # local build: PRODUCT_PACKAGES += ElePeripherals
 PRODUCT_PACKAGES += ele-status
+
+# Per-app network switch. Same packages as the Treble GSI.
+$(call inherit-product, device/ele/os/network/ele_privacy.mk)

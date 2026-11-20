@@ -1,0 +1,12 @@
+// Copyright 2026 Sweet Meet
+// SPDX-License-Identifier: Apache-2.0
+
+android_app {
+    name: "EleNetwork",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    sdk_version: "current",
+    min_sdk_version: "35",
+    product_specific: true,
+    certificate: "platform",
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2026 Sweet Meet. SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <string name="app_name">Network access</string>
+    <string name="prototype_notice">Prototype. This screen saves the owner\'s network choice for each app. The choice is on unless it was turned off. Off means the app should see the network as down. One switch covers that app\'s IP traffic. This build has not been shown to block traffic. The cellular baseband is unchanged.</string>
+    <string name="network_switch">Network</string>
+    <string name="switch_content_description">Network for %1$s</string>
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
+    <string name="loading">Loading apps</string>
+    <string name="empty_apps">No apps that request network access were found.</string>
+    <string name="policy_unreadable">The saved network choices could not be read. Switches stay hidden so a bad file is not replaced.</string>
+    <string name="apps_unavailable">The app list could not be read.</string>
+    <string name="save_failed">The choice could not be saved.</string>
+</resources>

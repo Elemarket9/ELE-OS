@@ -127,7 +127,9 @@ architecture doc states what is feasible on which hardware.
   as [GrapheneOS's network permission](https://grapheneos.org/features):
   one switch, granted by default so apps keep working, and a denial the app
   sees as the network being down. A per-transport firewall comes later. The
-  toggle is not built yet, and it does not constrain the cellular baseband.
+  prototype in `network/` stores that choice and shows the switch on the
+  Cuttlefish and Treble GSI products. It has not been shown to block
+  traffic, and it does not constrain the cellular baseband.
 - **App sandbox.** Each Android app already runs in AOSP's UID, SELinux, and
   seccomp sandbox. ELE-OS's near-term job is to avoid weakening that sandbox.
   Hardware memory tagging and similar defenses exist only on chips that
@@ -153,14 +155,16 @@ This git repository is a device overlay. In an AOSP tree it is checked out at
 | Piece | State |
 | --- | --- |
 | Cuttlefish product `ele_os_cf_x86_64` | Shared development target until it actually boots. Makefile registered. Image not built or booted in this repository. Signed with upstream public test-keys. |
-| Treble GSI | The hardware image for many Treble-compliant phones. Not built yet. No phone maker is a partner. A GSI leaves the vendor image, kernel, and firmware on the phone. |
+| Treble GSI `ele_os_gsi_arm64` | Makefile registered. Not built or booted. No phone maker is a partner. A GSI leaves the vendor image, kernel, and firmware on the phone. |
+| Network access | Prototype screen and per-app on/off choice in `network/`. Granted by default. Installed by the Cuttlefish and GSI makefiles. Host tests only. Does not show that traffic is blocked, and does not constrain the baseband. |
 | `ele-status` | In the default image. Local shell snapshot of product name, fingerprint, two patch dates, verified-boot properties, and a memory reading. Not attestation and not proof that patches are complete. |
 | `libele_owner_proof` | Ed25519 check and a one-time challenge session. Host tests only. No device enforces it. |
 | External devices app | Optional experiment in the tree. Camera2 preview of external cameras, and a line about whether the default network reports a satellite transport. Not in the default image, not on the core roadmap, not validated on hardware. |
 | Faith | The built-in assistant. Named, not started. No model, no speech engine, and no package in this repository. Default wake phrase "Hey Faith", which the owner can change. |
 
-Lost-device recovery, OTA delivery, the network toggle, TalkBack, Faith, and
-the Treble GSI are future work. Phones are added later through the
+Lost-device recovery, OTA delivery, a recorded socket block for the network
+switch, TalkBack, Faith, and a Treble GSI boot are future work. Phones are
+added later through the
 [onboarding kit](docs/device-support.md). The roadmap says how each piece is
 measured before anyone calls it done.
 
