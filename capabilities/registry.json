@@ -564,16 +564,25 @@
       "subsystem": "Memory management",
       "functional_requirements": "Estimate approaching contention from reclaim, stalls and allocation signals.",
       "architectural_dependencies": "MMU, page tables and kernel synchronization",
-      "implementation_paths": [],
-      "workstream": "Memory management",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Replay spikes; measure early-warning accuracy and false alarms.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "resource/memory_pressure.h",
+        "resource/memory_pressure.cpp",
+        "resource/main.cpp",
+        "tests/memory_pressure.cpp"
       ],
-      "commit_references": []
+      "workstream": "Memory management",
+      "integration_interfaces": [
+        "Linux /proc/pressure/memory, /proc/vmstat, /proc/meminfo, monotonic sampling"
+      ],
+      "security_considerations": "Read-only bounded telemetry values; unknown data is not interpreted as normal; no kernel or LMKD overrides.",
+      "verification_requirements": "Replay spikes; measure early-warning accuracy and false alarms.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Device access to Linux PSI and vmstat, calibrated forecast accuracy and actual lmkd integration remain outstanding."
+      ],
+      "commit_references": [
+        "0b7e23393e3613ea761b7d143d81229b9364ce4d"
+      ]
     },
     {
       "id": "EOS-033",

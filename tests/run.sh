@@ -18,7 +18,7 @@ sh tests/ota.sh
 printf 'Resource advisory policy checks passed\n'
 "$cxx" -std=c++17 -Wall -Wextra -Werror -Iresource resource/telemetry.cpp tests/telemetry.cpp -o "$tmp/telemetry"
 "$tmp/telemetry"
-"$cxx" -std=c++17 -Wall -Wextra -Werror -pthread -Iresource resource/telemetry.cpp resource/main.cpp -o "$tmp/ele-resource"
+"$cxx" -std=c++17 -Wall -Wextra -Werror -pthread -Iresource resource/telemetry.cpp resource/memory_pressure.cpp resource/main.cpp -o "$tmp/ele-resource"
 "$tmp/ele-resource" > "$tmp/resource-report"
 [ "$(wc -l < "$tmp/resource-report")" -eq 4 ]
 [ "$(grep -c 'thermal=unknown background_allowed=no$' "$tmp/resource-report")" -eq 4 ]
@@ -29,3 +29,5 @@ for host_test in tests/host-*.sh; do
     sh "$host_test"
 done
 sh tests/ota_client.sh
+"$cxx" -std=c++17 -Wall -Wextra -Werror -Iresource resource/memory_pressure.cpp tests/memory_pressure.cpp -o "$tmp/memory-pressure"
+"$tmp/memory-pressure"

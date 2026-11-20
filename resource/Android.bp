@@ -6,7 +6,7 @@ cc_library_headers {
 cc_binary {
     name: "ele-resource",
     product_specific: true,
-    srcs: ["main.cpp", "telemetry.cpp"],
+    srcs: ["main.cpp", "telemetry.cpp", "memory_pressure.cpp"],
     cpp_std: "c++17",
     cflags: ["-Wall", "-Wextra", "-Werror"],
 }
