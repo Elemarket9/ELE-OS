@@ -48,8 +48,9 @@ image is identified in the note so later comparisons have a baseline.
 Evidence: the command transcript. A failed build is recorded as a failure,
 with the missing host feature (KVM, RAM, disk), and does not count.
 
-**A2. ELE-OS GSI boots on a Treble phone.** Starts only after A1. Add the
-`ele_os_gsi_arm64` product, build it from the pinned manifest, and boot it
+**A2. ELE-OS GSI boots on a Treble phone.** Starts only after A1. The
+`ele_os_gsi_arm64` makefile is already registered. Build it from the pinned
+manifest, and boot it
 on one Treble-compliant phone the tester is allowed to wipe. The note names
 the model, what worked, and what failed. The boot is Tier 1 for that phone.
 It does not add the phone to a supported list, and it does not claim Tier 3.
