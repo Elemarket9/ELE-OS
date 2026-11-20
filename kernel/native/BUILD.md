@@ -2,7 +2,9 @@
 
 The standalone track pins the exact upstream Linux v7.3.5 commit in
 upstream.json, applies ELE code to a disposable git worktree, and builds
-a kernel named 7.3.5-eleos. It does not modify the AOSP product, install a
+a kernel named 7.3.5-eleos-dirty. The `-dirty` suffix identifies the local
+ELE source overlay applied to the pinned upstream worktree; the manifest records
+the clean upstream commit separately. It does not modify the AOSP product, install a
 kernel on the host, or build Android's separate ACK 6.18 track.
 
 On a Linux build machine, install git, Python 3.11+, make, GCC, binutils,
