@@ -2,11 +2,12 @@
   "schema_version": 1,
   "updated_at": "2026-11-20",
   "status_vocabulary": {
-    "source_present": "Implementation code exists in the cited tree.",
-    "compiled": "Set true only after a compiler/build workflow completes successfully for that source revision.",
-    "integrated": "Set true only when connected to a real kernel build target; experimental overlays do not count as merged mainline integration.",
-    "runtime_verified": "Set true only after actual runtime enforcement or service behavior is exercised.",
-    "hardware_verified": "Set true only after verification on identified physical hardware."
+    "source_present": "Boolean: implementation code exists in cited source tree.",
+    "compiled": "Boolean: true only after successful compilation of the cited revision.",
+    "integrated": "Boolean: source is connected to a kernel build target; this does not mean merged to main.",
+    "runtime_verified": "Boolean: true only after runtime behavior is exercised on the exact artifact.",
+    "hardware_verified": "Boolean: true only after verification on identified physical hardware.",
+    "status_fields": "Adjacent *_status and evidence fields explain pending work and source evidence."
   },
   "tracks": {
     "independent_linux": {
@@ -14,21 +15,25 @@
       "target_pin": "kernel/native/upstream.json",
       "source_present": true,
       "build_overlay_present": true,
-      "compiled": "pending CI for PR #33 commit 4fbf0a6f299bac13994ca376a35ae426f1a05625",
-      "integrated": "experimental build.py overlay on PR #33; not merged to main",
-      "runtime_verified": "pending x86_64 QEMU stage in PR #33 workflow",
+      "compiled": false,
+      "integrated": true,
+      "runtime_verified": false,
       "hardware_verified": false,
       "evidence": [
         "kernel/native/build.py",
         "kernel/native/BUILD.md",
         ".github/workflows/native-kernel.yml"
-      ]
+      ],
+      "compile_status": "Build and boot workflow is running or queued for the current PR revision.",
+      "integration_status": "Overlay integrated by the experimental builder; PR #33 is not merged to main.",
+      "merged_to_main": false,
+      "runtime_status": "Awaiting x86_64 QEMU smoke stage."
     },
     "android_common_kernel": {
       "target": "common-android17-6.18",
       "source_present": true,
       "compiled": false,
-      "integrated": false,
+      "integrated": true,
       "runtime_verified": false,
       "hardware_verified": false,
       "evidence": [
@@ -36,7 +41,10 @@
         "kernel/eleos_defconfig",
         "kernel/README.md"
       ],
-      "notes": "Kleaf build entry point and version/config guards exist on main. No ACK build, Cuttlefish boot, KMI validation, or handset verification recorded."
+      "notes": "Kleaf build entry point and version/config guards exist on main. No ACK build, Cuttlefish boot, KMI validation, or handset verification recorded.",
+      "compile_status": "No successful ACK compile recorded.",
+      "integration_status": "Kleaf entry point targets virtual-device builds.",
+      "runtime_status": "No Cuttlefish boot recorded."
     }
   },
   "components": [
@@ -45,21 +53,22 @@
       "scope": "Global memory-pressure classification and telemetry",
       "source_present": true,
       "compiled": false,
-      "integrated": "Experimental native overlay; not merged into main",
+      "integrated": true,
       "runtime_verified": false,
       "hardware_verified": false,
       "enforcement": "Advisory telemetry only; does not reclaim memory, compress pages, or control OOM.",
       "evidence": [
         "kernel/native/pressure/ele_pressure.c",
         "kernel/native/pressure/ele_pressure_policy.h"
-      ]
+      ],
+      "integration_status": "Experimental native overlay; not merged into main"
     },
     {
       "id": "ELE-MemSafe-wx",
       "scope": "Deny mappings requesting simultaneous write and execute",
       "source_present": true,
       "compiled": false,
-      "integrated": "Experimental native build injects checks in common security mmap/mprotect dispatch",
+      "integrated": true,
       "runtime_verified": false,
       "hardware_verified": false,
       "enforcement": "Intended per-mapping denial only. Writable aliases, RW-to-RX JIT policy, architecture-specific behavior, and Android compatibility remain unverified.",
@@ -67,34 +76,37 @@
         "kernel/native/security/ele_memguard.h",
         "kernel/native/build.py",
         "kernel/native/smoke_init.c"
-      ]
+      ],
+      "integration_status": "Experimental native build injects checks in common security mmap/mprotect dispatch"
     },
     {
       "id": "ELE-Shield-module-signing",
       "scope": "Require authenticated kernel modules",
       "source_present": true,
       "compiled": false,
-      "integrated": "Experimental build config enables forced module signatures",
+      "integrated": true,
       "runtime_verified": false,
       "hardware_verified": false,
       "enforcement": "Build configuration plus QEMU test exists; actual build and rejection test pending.",
       "evidence": [
         "kernel/native/build.py",
         "kernel/native/smoke_init.c"
-      ]
+      ],
+      "integration_status": "Experimental build config enables forced module signatures"
     },
     {
       "id": "ELE-Shield-kernel-hardening",
       "scope": "Selected upstream kernel hardening options",
       "source_present": true,
       "compiled": false,
-      "integrated": "Experimental build config requests strict kernel/module RWX, KASLR, fortified copy, usercopy, slab hardening, and init-on-allocation",
+      "integrated": true,
       "runtime_verified": false,
       "hardware_verified": false,
       "enforcement": "Effective Kconfig resolution is checked by builder; runtime coverage pending.",
       "evidence": [
         "kernel/native/build.py"
-      ]
+      ],
+      "integration_status": "Experimental build config requests strict kernel/module RWX, KASLR, fortified copy, usercopy, slab hardening, and init-on-allocation"
     },
     {
       "id": "ELE-Verify-secure-boot",
