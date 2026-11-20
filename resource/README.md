@@ -23,3 +23,5 @@ prediction accuracy, battery gains or full-system integration.
 Next: connect read-only, timestamped system telemetry on the AOSP development
 target. Compare forecasts with a naive baseline; measure overhead and
 calibrate per device. Integrate only through supported AOSP policy interfaces.
+
+The `ele-resource` product command now reads real aggregate Linux CPU and memory counters. It takes four 250 ms intervals, feeds ResourcePolicy and prints its read-only advice. Missing, invalid and regressed counters produce unknown values. No thermal HAL authorization is available in this CLI, so background authorization is always denied. This is source-level integration, not device-verified scheduling or telemetry acceptance (EOS-348). Host tests cover fixtures and execute the real procfs reader.
