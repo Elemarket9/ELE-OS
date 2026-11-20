@@ -66,6 +66,8 @@ public final class DevicesActivity extends Activity implements SurfaceHolder.Cal
         setContentView(R.layout.devices);
         route = findViewById(R.id.route);
         inventory = findViewById(R.id.inventory);
+        findViewById(R.id.open_power).setOnClickListener(v ->
+                startActivity(new android.content.Intent(this, PowerActivity.class)));
         findViewById(R.id.open_network).setOnClickListener(v ->
                 startActivity(new android.content.Intent(this, NetworkActivity.class)));
         findViewById(R.id.open_bluetooth).setOnClickListener(v ->

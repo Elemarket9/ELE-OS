@@ -133,4 +133,20 @@
     <string name="net_rate">Observed interface traffic: received %1$d B/s, sent %2$d B/s</string>
     <string name="bt_retry_opt_in">Allow up to three automatic retries for new connection requests while this screen is open</string>
     <string name="bt_retry_wait">Waiting for bounded reconnect attempt</string>
+    <string name="power_title">Battery and thermal diagnostics</string>
+    <string name="power_intro">Reports platform readings every five seconds while this screen is open. Automatic Bluetooth retry is blocked when readings are unknown, the battery is low, power saver is on or thermal throttling is moderate or worse. Manual connections and platform safety controls are unchanged.</string>
+    <string name="power_unknown">Unknown</string>
+    <string name="power_percent">%1$d%%</string>
+    <string name="power_temp">%1$.1f °C</string>
+    <string name="power_voltage">%1$d mV</string>
+    <string name="power_current">%1$d µA (signed)</string>
+    <string name="power_none">None reported</string>
+    <string name="power_light">Light</string>
+    <string name="power_moderate">Moderate</string>
+    <string name="power_severe">Severe</string>
+    <string name="power_critical">Critical</string>
+    <string name="power_emergency">Emergency</string>
+    <string name="power_shutdown">Shutdown</string>
+    <string name="power_report">Battery: %1$s\nBattery temperature: %2$s\nVoltage: %3$s\nCurrent: %4$s\nThermal throttling: %5$s\nPower saver: %6$s\nOptional retry permitted: %7$s</string>
+    <string name="bt_retry_power">Automatic retry blocked by battery or thermal policy</string>
 </resources>

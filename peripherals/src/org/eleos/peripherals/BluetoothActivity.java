@@ -111,7 +111,13 @@ public final class BluetoothActivity extends Activity {
         // Turning off retries cancels pending retry timers, not ready connections.
         retryEnabled.setOnCheckedChangeListener((button, enabled) -> {
             if (!enabled) {
-                for (String id : new ArrayList<>(retries.keySet())) release(id);
+                for (String id : new ArrayList<>(budgets.keySet())) {
+                    RetryBudget budget = budgets.get(id);
+                    if (budget != null && budget.hasRetried() &&
+                            (queue.state(id) == LinkQueue.State.BACKOFF ||
+                             queue.state(id) == LinkQueue.State.QUEUED)) release(id);
+                }
+                budgets.clear();
                 render();
                 pump();
             }
@@ -265,6 +271,10 @@ public final class BluetoothActivity extends Activity {
         stopScan(false);
         String id;
         while ((id = queue.next()) != null) {
+            RetryBudget retry = budgets.get(id);
+            if (retry != null && retry.hasRetried() && !PowerSnapshot.read(this).allows()) {
+                release(id); status.setText(R.string.bt_retry_power); continue;
+            }
             Session s = new Session(id);
             sessions.put(id, s);
             try {
@@ -301,6 +311,11 @@ public final class BluetoothActivity extends Activity {
         try {
             if (device.getBondState() != BluetoothDevice.BOND_BONDED) return false;
         } catch (RuntimeException ex) { return false; }
+        if (!PowerSnapshot.read(this).allows()) {
+            release(id);
+            status.setText(R.string.bt_retry_power);
+            return true;
+        }
         long delay = budget.nextDelay(id.hashCode());
         if (delay < 0 || !queue.defer(id)) return false;
         closeSession(id);
