@@ -104,16 +104,21 @@ above. They use upstream development keys. They are not a release.
 
 ```sh
 repo init -u https://android.googlesource.com/platform/manifest -b android-16.0.0_r1
+mkdir -p .repo/local_manifests
+cp /path/to/ELE-OS/manifest/ele-os-local.xml .repo/local_manifests/ele-os.xml
 repo sync -c
-git clone https://github.com/Elemarket9/ELE-OS.git device/ele/os
 source build/envsetup.sh
-lunch ele_os_cf_x86_64-trunk_staging-userdebug
+lunch ele_os_cf_x86_64-aosp_current-userdebug
 m
 launch_cvd --daemon
 adb wait-for-device
 adb shell getprop sys.boot_completed
 adb shell /product/bin/ele-status
 ```
+
+Copy `manifest/ele-os-local.xml` from a checkout of this repository. `repo sync`
+then places the overlay at `device/ele/os`. Do not also git-clone into that
+path. The local manifest adds only that project.
 
 A completed boot reports `1` for `sys.boot_completed`, and `ele-status`
 reports `product=ele_os_cf_x86_64`. From a checkout of this repository on
@@ -128,9 +133,11 @@ before writing a performance conclusion. Record both transcripts under
 `docs/evidence/`.
 
 `lunch` only works after `source build/envsetup.sh`. The lunch combo is the
-one `AndroidProducts.mk` registers. It is specific to the pinned tag's
-release configs. If a newer manifest rejects `trunk_staging`, that is a pin
-migration, not a local edit to hide.
+one `AndroidProducts.mk` registers:
+`ele_os_cf_x86_64-aosp_current-userdebug`. On `android-16.0.0_r1` the
+release config map aliases `aosp_current` to `bp2a` and does not define
+`trunk_staging`. `lunch` has not been run. Moving the pin is a separate
+change, and the combo has to name a release config that pin declares.
 
 ### Keys
 

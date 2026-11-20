@@ -59,6 +59,14 @@ grep -q 'COMMON_LUNCH_CHOICES := ele_os_cf_x86_64-aosp_current-userdebug' Androi
 if grep -E '^[[:space:]]*COMMON_LUNCH_CHOICES' AndroidProducts.mk | grep -q 'trunk_staging'; then
     fail "AndroidProducts.mk must not register trunk_staging"
 fi
+if grep -R -n --exclude-dir=.git --exclude=check-build-contract.sh \
+    -F 'ele_os_cf_x86_64-trunk_staging-userdebug' . >/dev/null; then
+    fail "docs still tell lunch to use trunk_staging"
+fi
+grep -q 'ele_os_cf_x86_64-aosp_current-userdebug' docs/build.md \
+    || fail "docs/build.md must name the registered lunch combo"
+grep -q 'ele_os_cf_x86_64-aosp_current-userdebug' docs/architecture.md \
+    || fail "docs/architecture.md must name the registered lunch combo"
 
 grep -q 'inherit-product, $(LOCAL_DIR)/ele_os_cf_x86_64.mk' ele_os_cf_build.mk \
     || fail "build contract must inherit the Cuttlefish identity makefile"
