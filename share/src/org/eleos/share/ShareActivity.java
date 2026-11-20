@@ -15,6 +15,7 @@ import android.net.nsd.NsdServiceInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -110,7 +111,7 @@ public final class ShareActivity extends Activity {
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         nsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
         if (manager != null) {
-            channel = manager.initialize(this, getMainLooper(), reason -> setStatus("Nearby service disconnected. Reopen discovery."));
+            channel = manager.initialize(this, getMainLooper(), () -> setStatus("Nearby service disconnected. Reopen discovery."));
             receiver = new P2pReceiver();
         }
         requestNearbyPermission();
@@ -380,7 +381,7 @@ public final class ShareActivity extends Activity {
         });
     }
 
-    private void establishDataChannel(WifiP2pManager.ConnectionInfo info) {
+    private void establishDataChannel(WifiP2pInfo info) {
         if (!info.groupFormed) return;
         if (info.isGroupOwner) {
             transportName = "Wi-Fi Direct";
