@@ -285,6 +285,60 @@ unless a note explains a replacement that has been tested. We are not
 claiming a certification, and we are not claiming a better reader than a
 current Play Store TalkBack or than VoiceOver.
 
+## Track H — Built-in assistant
+
+Depends on A1 before any on-device run is claimed. The design and the license
+limits are in the architecture doc. No milestone below is done.
+
+**H1. Text in, text out, on Cuttlefish, with a local model.** A small
+language model runs through an MIT-licensed runtime (llama.cpp unless a later
+decision names another). No wake word, no microphone, no cloud. Record the
+process resident set from the system, and record which weight file was used
+and under which license. Publish no quality score and no tokens-per-second
+target. If the model file's license does not allow redistribution, it is not
+a candidate.
+
+Evidence: the command transcript, the license of the runtime and of the
+weights, and the memory reading. A crash or an out-of-memory kill is a
+failed run and is written down as one.
+
+**H2. On-device speech.** Speech-to-text from a MIT Whisper-class engine, and
+a spoken reply from a synthesizer we are allowed to ship. The current Piper
+engine is GPL-3.0-or-later and stays out of the Apache-2.0 image. A
+Lessac-derived Piper voice is not the default. AOSP Pico TTS (Apache-2.0)
+may speak in this milestone. A neural voice replaces it only when that
+voice's model card allows redistribution.
+
+Evidence: a spoken prompt becomes text, and a reply is spoken, on
+Cuttlefish. The note names the engines and the commits.
+
+**H3. Permissioned actions.** Calls, messages, alarms, settings, and app
+launch are separate switches, each off until the owner enables that
+category. A tool call for a category that is off does not fire the intent.
+The test uses a fixture contact and a fixture alarm, not a live carrier.
+
+Evidence: one allowed action and one refused action per category, on
+Cuttlefish.
+
+**H4. Class split.** On the Pixel 8, repeat H1 with the local model and
+record memory beside the Track B protocol. On a low-RAM image, repeat H1
+with a smaller model. If that run is killed or leaves the phone unusable
+under the protocol, the device page says the local model is unavailable.
+Opt-in cloud, if the open cloud policy allows a provider at all, is tested
+only with a provider the owner configured, and the note lists what left the
+device (text, audio, or both).
+
+Evidence: two memory readings, labelled by device class. No cross-class
+comparison presented as a score.
+
+**H5. Wake word.** Starts after the engine is chosen. Listening is off until
+the owner enables it. The detector runs on the device. Proprietary engines
+are out. Battery and extra RAM are part of the Track B note before the
+detector is on by default. The default stays off.
+
+Evidence: the wake word starts a session when enabled, and the microphone
+path is idle when it is disabled.
+
 ## Track G — What we will not schedule as a promise
 
 - Beating stock Android or iOS on camera, app compatibility, or raw speed.
@@ -297,12 +351,18 @@ current Play Store TalkBack or than VoiceOver.
   can legally document.
 - The External devices app. It stays in the tree as an optional experiment
   and is not part of this roadmap.
+- A claim that the assistant matches Google Assistant, Siri, or any cloud
+  model on quality or speed.
+- A Google speech, Gemini, or other Google-hosted assistant backend.
+- Linking the GPL-3 Piper engine into the Apache-2.0 system image.
 
 ## Suggested order
 
 1. A1, B1, D1's definition, F1.
-2. In parallel once A1 exists: B2, E2, F2, then A2 on a Pixel 8 whose OEM
-   unlocking toggle works.
+2. In parallel once A1 exists: B2, E2, F2, H1, then A2 on a Pixel 8 whose OEM
+   unlocking toggle works. H2 and H3 follow H1 on Cuttlefish. H4 waits until
+   the Pixel 8 and, later, the low-RAM device can take a measurement. H5
+   waits on the wake-word decision.
 3. A2 then drives B3, C2, C2a, D3, and E4. E4 is in scope for this phone
    because the hardware can relock. It is still unmet until the evidence
    exists.

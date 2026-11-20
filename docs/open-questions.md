@@ -128,6 +128,46 @@ experiments and are not pillars. Leaving the sources in the tree keeps the
 work. Installing the app on every phone would make an unvalidated experiment
 look like a feature.
 
+## Open: the assistant
+
+The assistant is a pillar. These four choices are not made. Constraints that
+are already fixed sit in the architecture doc: on-device first, no Google
+backend, MIT runtimes for the language model and for Whisper-class speech
+recognition, GPL-3 Piper not linked into the system image, action categories
+off until the owner enables each one, and no published quality or speed
+numbers until a run exists.
+
+### Assistant name
+
+Unset. Docs say "the assistant" until the owner picks a name. The name should
+be one we can use without colliding with Google Assistant, Siri, or another
+product's mark.
+
+### Default model
+
+Unset. llama.cpp (MIT) is the runtime to build against. The weight file is a
+separate license. A model is eligible only when its license allows us to
+redistribute it in an OS image and the Cuttlefish run in roadmap H1 records
+its memory cost. Flagship and low-RAM builds may ship different weights. No
+family (Llama, Gemma, Qwen, or any other) is selected.
+
+### Wake-word engine
+
+Unset. It has to be open source, on-device, and off until the owner enables
+it. openWakeWord (Apache-2.0) is eligible to evaluate. Picovoice Porcupine
+and other proprietary detectors are not. The choice waits on H1–H3 so
+listening is not the first thing we build.
+
+### Cloud policy
+
+Partly constrained, not settled. Cloud inference is off unless the owner
+opts in, and the provider is pluggable: the owner supplies the endpoint.
+No Google endpoint ships. Still open: whether the image may list any named
+provider at all, or only a blank endpoint; whether a request may send audio
+or only text the on-device recognizer already produced; and what the owner
+is told about retention before the first request. Until those are decided,
+roadmap H4 does not test a cloud path.
+
 ## Still open
 
 ### Android version pin

@@ -12,6 +12,10 @@ the repository settings, is:
 
 > Open-source Android-based mobile OS for every phone class: efficient, long-term signed updates, privacy and owner-controlled lost-device recovery.
 
+That sentence was set before the assistant pillar. It still describes the
+project. The owner can add the assistant to it in the same settings screen
+if they want the blurb to name it.
+
 ## Why
 
 A phone is a computer the owner already paid for. Two facts get in the way of
@@ -77,6 +81,27 @@ a factory reset, when the bootloader and the storage layout can enforce it.
 The design and the threat model are in the architecture doc. The code in
 this repository is a host-side signature check. No phone is protected by it.
 
+### Built-in assistant
+
+A system assistant in the same role as Google Assistant or Siri: voice, text,
+and a short list of actions the owner can allow (calls, messages, alarms,
+settings, launching an app). It is on-device first. The language-model
+runtime we will start from is [llama.cpp](https://github.com/ggml-org/llama.cpp)
+(MIT). Speech-to-text starts from Whisper-class engines whose code is MIT
+([whisper.cpp](https://github.com/ggml-org/whisper.cpp),
+[OpenAI Whisper](https://github.com/openai/whisper)). Spoken replies are a
+local synthesizer. The current Piper engine is GPL-3.0-or-later and is not
+linked into this Apache-2.0 image; many of its published voices are
+research-only. Details are in the architecture doc.
+
+Cloud models run only if the owner opts in, through a provider they plug in.
+There is no Google speech or Gemini backend. A flagship gets a full local
+model. A low-RAM phone gets a smaller local model or, if the owner opts in,
+a cloud model. No quality or speed number is claimed: the model, the speech
+engines, and the system share the phone's RAM, and a vendor NPU is not a
+backend we have shown works. The assistant is not in this tree yet. Its
+name, default model, wake-word engine, and cloud policy are still open.
+
 ### Old and low-end phones stay in use
 
 A leaner image, fewer background services, and memory, battery, and storage
@@ -131,10 +156,11 @@ This git repository is a device overlay. In an AOSP tree it is checked out at
 | `ele-status` | In the default image. Local shell snapshot of product name, fingerprint, two patch dates, verified-boot properties, and a memory reading. Not attestation and not proof that patches are complete. |
 | `libele_owner_proof` | Ed25519 check and a one-time challenge session. Host tests only. No device enforces it. |
 | External devices app | Optional experiment in the tree. Camera2 preview of external cameras, and a line about whether the default network reports a satellite transport. Not in the default image, not on the core roadmap, not validated on hardware. |
+| Assistant | A pillar. Not started. No model, no speech engine, and no package in this repository. |
 
-Lost-device recovery, OTA delivery, the network toggle, TalkBack, and the
-Pixel 8 port are future work. The roadmap says how each is measured before
-anyone calls it done.
+Lost-device recovery, OTA delivery, the network toggle, TalkBack, the
+assistant, and the Pixel 8 port are future work. The roadmap says how each
+is measured before anyone calls it done.
 
 ## Documents
 
