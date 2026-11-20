@@ -33,6 +33,18 @@ struct CheckedPackage {
     std::array<uint8_t, 64> signature{};
 };
 
+inline bool TargetProduct(const std::string& target, std::string& product) {
+    if (target == "cuttlefish") {
+        product = "ele_os_cf_x86_64";
+        return true;
+    }
+    if (target == "treble-gsi") {
+        product = "ele_os_gsi_arm64";
+        return true;
+    }
+    return false;
+}
+
 std::string Canonical(const Metadata& metadata);
 bool Validate(const Metadata& metadata, std::string& error);
 bool Parse(const std::string& raw, Metadata& out, std::string& error);

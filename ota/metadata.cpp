@@ -86,9 +86,9 @@ bool IsAospReleaseTag(const std::string& text) {
 }
 
 std::string ProductFor(const std::string& target) {
-    if (target == "cuttlefish") return "ele_os_cf_x86_64";
-    if (target == "treble-gsi") return "ele_os_gsi_arm64";
-    return "";
+    std::string product;
+    if (!TargetProduct(target, product)) return "";
+    return product;
 }
 
 std::string PayloadKindFor(const std::string& target) {
