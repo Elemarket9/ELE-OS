@@ -496,7 +496,11 @@ public final class AndroidTlsPairing implements AutoCloseable {
                 throw new CertificateException("expected exactly one peer certificate");
             }
             X509Certificate certificate = chain[0];
-            validatePeerCertificate(certificate, expectedCurve);
+            try {
+                validatePeerCertificate(certificate, expectedCurve);
+            } catch (GeneralSecurityException e) {
+                throw new CertificateException("peer certificate validation failed", e);
+            }
             try {
                 byte[] fingerprint = sha256(certificate.getEncoded());
                 byte[] previous = capturedFingerprint;
