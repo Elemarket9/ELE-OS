@@ -211,15 +211,15 @@
     {
       "id": "ELE-Android-ACK",
       "scope": "Binder, GKI/KMI, SELinux, HALs, runtime, graphics/camera and Bluetooth compatibility on ACK 6.18",
-      "source_present": false,
+      "source_present": true,
       "compiled": false,
-      "integrated": false,
+      "integrated": true,
       "runtime_verified": false,
       "hardware_verified": false,
       "evidence": [
         "kernel/build.py"
       ],
-      "notes": "Only build scaffolding and a limited hardening fragment exist; compatibility subsystem is not implemented."
+      "notes": "Build scaffold only: kernel/build.py pins the intended branch name, rejects non-6.18 versions, runs Kleaf targets, validates a config and image header, and writes provenance. It does not validate manifest identity, compile/boot evidence, KMI, Binder, SELinux, HALs, graphics, camera, Bluetooth, or APK compatibility."
     }
   ],
   "release_gate": "Do not mark complete until all required components have source, successful target builds, appropriate runtime/security tests, and hardware results where hardware is required."
