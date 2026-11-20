@@ -1,0 +1,102 @@
+# Packages and modules that ELE-OS products must not add.
+# This is a build policy for this repository. It is not a measurement of
+# RAM, storage, or battery, and it does not edit a phone's vendor image.
+# A Treble GSI leaves the vendor image in place, so software already on
+# that partition is outside this list.
+#
+# AOSP's generic system image is not on this list. AOSP WebView
+# (com.android.webview) is not on this list. TalkBack built from
+# google/talkback (Apache-2.0) is not on this list; its package name
+# com.google.android.marvin.talkback stays allowed. The Play Store
+# Accessibility Suite prebuilt is forbidden below.
+#
+# Lines are "module <Soong-or-make-module>" or "package <android-package>".
+# module is the name a product makefile would put in PRODUCT_PACKAGES.
+# package is the Android package name.
+
+# Play Services, Play Store, and the Google Services Framework.
+module GmsCore
+module PrebuiltGmsCore
+module PrebuiltGmsCorePi
+module PrebuiltGmsCorePix
+module PrebuiltGmsCoreSc
+module GoogleServicesFramework
+module Phonesky
+module Velvet
+package com.google.android.gms
+package com.google.android.gsf
+package com.android.vending
+package com.google.android.googlequicksearchbox
+
+# microG reimplements those same stacks, including signature spoofing.
+# It is not Google's code, and it is still not part of the image.
+module FakeStore
+module GsfProxy
+package org.microg.gms
+
+# Sandboxed Play ships the Play packages above. No separate module.
+
+# Google apps and the Play Accessibility Suite prebuilt.
+module AndroidAccessibilitySuite
+module AndroidAuto
+module Books
+module CalendarGoogle
+module Chrome
+module ConfigUpdater
+module DeskClockGoogle
+module DevicePersonalizationServices
+module Drive
+module Gearhead
+module Gmail2
+module GoogleBackupTransport
+module GoogleCalendarSyncAdapter
+module GoogleContacts
+module GoogleContactsSyncAdapter
+module GoogleDialer
+module GoogleFeedback
+module GoogleLoginService
+module GoogleOneTimeInitializer
+module GooglePartnerSetup
+module GoogleTTS
+module Hangouts
+module LatinImeGoogle
+module Magazines
+module Maps
+module Music2
+module NexusLauncher
+module NexusLauncherRelease
+module Photos
+module PlayGames
+module PlusOne
+module PrebuiltBugle
+module SetupWizard
+module Street
+module TagGoogle
+module TrichromeLibrary
+module Turbo
+module Videos
+module WebViewGoogle
+module Wellbeing
+module YouTube
+module talkback
+package com.android.chrome
+package com.google.android.apps.docs
+package com.google.android.apps.maps
+package com.google.android.apps.messaging
+package com.google.android.apps.nexuslauncher
+package com.google.android.apps.photos
+package com.google.android.apps.restore
+package com.google.android.apps.turbo
+package com.google.android.apps.wellbeing
+package com.google.android.calendar
+package com.google.android.contacts
+package com.google.android.dialer
+package com.google.android.feedback
+package com.google.android.gm
+package com.google.android.ims
+package com.google.android.inputmethod.latin
+package com.google.android.partnersetup
+package com.google.android.projection.gearhead
+package com.google.android.setupwizard
+package com.google.android.tts
+package com.google.android.youtube
