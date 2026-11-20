@@ -752,16 +752,25 @@
       "subsystem": "Storage and file systems",
       "functional_requirements": "Use journaling or copy-on-write transactions with explicit durability ordering.",
       "architectural_dependencies": "block I/O, crypto and VFS",
-      "implementation_paths": [],
-      "workstream": "Storage and file systems",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Inject power loss at write boundaries; recover the last durable state.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "storage/atomic_store.h",
+        "storage/atomic_store.cpp",
+        "storage/main.cpp",
+        "tests/host-storage.sh"
       ],
-      "commit_references": []
+      "workstream": "Storage and file systems",
+      "integration_interfaces": [
+        "POSIX openat, renameat, fsync; OpenSSL/BoringSSL SHA-256; debug product binary"
+      ],
+      "security_considerations": "Private owner-only directory and file, path component validation, no symlink traversal of final component, bounded data; digest is not authenticity.",
+      "verification_requirements": "Inject power loss at write boundaries; recover the last durable state.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Actual platform service integration and filesystem/power-loss validation; no filesystem metadata journal, authenticated manifests or cross-service locking."
+      ],
+      "commit_references": [
+        "ed613a44c9262cdbc0753b1d86220b18698ddfc6"
+      ]
     },
     {
       "id": "EOS-043",
@@ -871,16 +880,25 @@
       "subsystem": "Storage and file systems",
       "functional_requirements": "Validate checksums or authenticated metadata at appropriate trust boundaries.",
       "architectural_dependencies": "block I/O, crypto and VFS",
-      "implementation_paths": [],
-      "workstream": "Storage and file systems",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Inject corruption; detect faults without silently returning bad data.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "storage/atomic_store.h",
+        "storage/atomic_store.cpp",
+        "storage/main.cpp",
+        "tests/host-storage.sh"
       ],
-      "commit_references": []
+      "workstream": "Storage and file systems",
+      "integration_interfaces": [
+        "POSIX openat, renameat, fsync; OpenSSL/BoringSSL SHA-256; debug product binary"
+      ],
+      "security_considerations": "Private owner-only directory and file, path component validation, no symlink traversal of final component, bounded data; digest is not authenticity.",
+      "verification_requirements": "Inject corruption; detect faults without silently returning bad data.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Actual platform service integration and filesystem/power-loss validation; no filesystem metadata journal, authenticated manifests or cross-service locking."
+      ],
+      "commit_references": [
+        "ed613a44c9262cdbc0753b1d86220b18698ddfc6"
+      ]
     },
     {
       "id": "EOS-050",
@@ -956,16 +974,25 @@
       "subsystem": "Storage and file systems",
       "functional_requirements": "Coordinate concurrent readers and writers using defined atomicity semantics.",
       "architectural_dependencies": "block I/O, crypto and VFS",
-      "implementation_paths": [],
-      "workstream": "Storage and file systems",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Stress concurrent rename/write/lock operations; verify consistency.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "storage/atomic_store.h",
+        "storage/atomic_store.cpp",
+        "storage/main.cpp",
+        "tests/host-storage.sh"
       ],
-      "commit_references": []
+      "workstream": "Storage and file systems",
+      "integration_interfaces": [
+        "POSIX openat, renameat, fsync; OpenSSL/BoringSSL SHA-256; debug product binary"
+      ],
+      "security_considerations": "Private owner-only directory and file, path component validation, no symlink traversal of final component, bounded data; digest is not authenticity.",
+      "verification_requirements": "Stress concurrent rename/write/lock operations; verify consistency.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Actual platform service integration and filesystem/power-loss validation; no filesystem metadata journal, authenticated manifests or cross-service locking."
+      ],
+      "commit_references": [
+        "ed613a44c9262cdbc0753b1d86220b18698ddfc6"
+      ]
     },
     {
       "id": "EOS-055",
