@@ -41,3 +41,35 @@ Run `sh tests/status.sh` in this repository. It exercises the shipped shell
 code on Linux with fixture Android properties and real kernel memory counters.
 Full image compilation and emulator boot remain unverified. Lost Mode, OTA
 delivery, and physical handset support are future milestones.
+
+## Owner authorization after reset
+
+The target behavior is that erasing user data preserves the ownership binding.
+Reactivation requires proof from an enrolled owner or an explicitly authorized
+recovery process. The prototype uses a public key as the ownership identifier.
+The verification message contains no owner name, phone number or email address.
+
+The first component, `libele_owner_proof`, verifies an Ed25519 signature over
+the exact ASCII bytes of `ELE-OS/reactivate/v1` (no terminator), a 32-byte
+device identifier, then a fresh 32-byte challenge. Build the module in AOSP
+with `m libele_owner_proof`. For a Linux host with a C++ compiler and OpenSSL
+development headers, run:
+
+```sh
+c++ -std=c++17 -Wall -Wextra -Werror -Iactivation activation/owner_proof.cpp tests/owner_proof.cpp -lcrypto -o /tmp/ele-owner-test
+/tmp/ele-owner-test
+```
+
+This component checks a signature only. Device enforcement still requires
+OEM-supported verified boot, a trusted owner record outside wiped userdata,
+fresh challenges from a secure random source, atomic one-time consumption,
+and a mandatory activation check before normal setup. Missing or corrupt
+enrollment evidence must never silently turn an enrolled handset into a new
+handset. Owner transfer and loss of the recovery credential need explicit
+recovery flows. No device is currently protected by this prototype.
+
+Performance comparisons will use the same handset, workload, build variant,
+and thermal conditions, recording cold app launch time, boot-to-interactive
+time, and background notification delivery alongside battery use. Android
+compatibility checks must include calls, camera, notifications, and app
+installation after authorized reactivation.
