@@ -18,3 +18,5 @@ reviewed in dependency order against latest main. Some are deliberately
 draft or prototype-only. Do not merge a UI as a firewall or a host-only
 cryptographic component as device recovery. Record CI and hardware evidence
 separately. The baseline still requires a full pinned AOSP checkout and KVM.
+
+The ARM64 Treble GSI and low-RAM product configurations are registered in source. The low-RAM class uses upstream lmkd mode and ART build flags, not a measured memory or battery improvement. Both low-RAM products inherit shared settings once. GSI deployment must establish which product-partition artifacts can actually be installed on the specific device. Do not flash these test-key targets on an owner's production device.

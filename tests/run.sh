@@ -23,3 +23,8 @@ printf 'Resource advisory policy checks passed\n'
 [ "$(wc -l < "$tmp/resource-report")" -eq 4 ]
 [ "$(grep -c 'thermal=unknown background_allowed=no$' "$tmp/resource-report")" -eq 4 ]
 python3 tests/capability_registry.py
+# Product class checks do not replace compilation of the platform.
+for host_test in tests/host-*.sh; do
+    [ -f "$host_test" ] || continue
+    sh "$host_test"
+done
