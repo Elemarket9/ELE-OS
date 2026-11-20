@@ -1,0 +1,13 @@
+// Copyright 2026 The ELE-OS Authors
+// SPDX-License-Identifier: Apache-2.0
+
+// Prototype voice screen. Not listed in PRODUCT_PACKAGES. The Cuttlefish
+// product makefile is left unchanged: this app is not part of the default image.
+android_app {
+    name: "EleFaithVoice",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    sdk_version: "current",
+    min_sdk_version: "35",
+    product_specific: true,
+}

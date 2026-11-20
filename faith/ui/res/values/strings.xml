@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Faith</string>
+    <string name="prototype_banner">Prototype. Wake detection and speech recognition are not running in this build.</string>
+    <string name="image_targets">For Cuttlefish (ele_os_cf_x86_64) and a Treble GSI (ele_os_gsi_arm64). No phone maker is assumed. Speech has not been shown on either image.</string>
+    <string name="section_wake">Wake phrase</string>
+    <string name="phrase_hint">Wake phrase</string>
+    <string name="save_phrase">Save phrase</string>
+    <string name="phrase_saved">Wake phrase saved.</string>
+    <string name="phrase_rejected">Enter a wake phrase.</string>
+    <string name="active_phrase">Active wake phrase: %1$s</string>
+    <string name="listen">Listen for the wake phrase</string>
+    <string name="mic_off">Microphone idle. Listening is off.</string>
+    <string name="mic_on_closed">Listening is on. This prototype has not opened the microphone.</string>
+    <string name="section_message">Message</string>
+    <string name="message_hint">Type to Faith</string>
+    <string name="send">Send</string>
+    <string name="reply_idle">Type a message. Voice recognition is not running in this prototype.</string>
+    <string name="reply_empty_input">Enter a message.</string>
+    <string name="section_cloud">Cloud speech</string>
+    <string name="cloud">Use a cloud speech provider</string>
+    <string name="endpoint_hint">Owner endpoint. None is included.</string>
+    <string name="save_endpoint">Save endpoint</string>
+    <string name="cloud_off">Cloud speech is off. Nothing is sent.</string>
+    <string name="cloud_needs_endpoint">Cloud speech is on, and no endpoint is set. Nothing is sent.</string>
+    <string name="cloud_opted_in_no_send">Cloud speech is on for the endpoint you set. This build has no cloud client, so nothing is sent.</string>
+    <string name="cloud_can_send">Cloud speech is on and this provider can send audio to the endpoint you set.</string>
+    <string name="cloud_refused">That endpoint is not used. ELE-OS does not send speech to Google. Nothing was sent.</string>
+    <string name="cloud_invalid">Enter an http or https endpoint, or leave it empty.</string>
+</resources>
