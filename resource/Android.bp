@@ -1,0 +1,4 @@
+cc_library_headers {
+    name: "libele_resource_policy_headers",
+    export_include_dirs: ["."],
+}
