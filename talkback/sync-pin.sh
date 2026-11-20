@@ -38,10 +38,10 @@ grep -q 'GNU General Public License' \
 grep -q "talkbackVersionName = \"$version_name\"" "$dest/version.gradle"
 
 echo "TalkBack pin verified: $revision ($version_name, $spdx)."
-echo "Closed Play artifacts and GPL/LGPL braille headers are still in this revision."
-echo "No APK installed."
+echo "Play Services, ML Kit, Play Core, liblouis, and BRLTTY remain in the pin."
+echo "No package was added to an ELE-OS product."
 
 if [ "${1:-}" = "--install" ]; then
-    echo "Refusing to install an APK from the stock phone build." >&2
+    echo "Refusing to install an APK. The stock phone build links Play libraries and copyleft braille code." >&2
     exit 1
 fi

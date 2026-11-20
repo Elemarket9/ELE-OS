@@ -1,9 +1,10 @@
 # TalkBack
 
-Prototype pin for the ELE-OS screen reader. The host check in
-`tests/talkback.sh` verifies this pin and the product makefiles. It does not
-build an APK, boot Cuttlefish, boot a Treble GSI, or show the reader speaking
-on a device. No such run is recorded in this repository.
+Prototype pin for the ELE-OS screen reader. The reader is not in the image.
+Lunch targets do not require an APK.
+Host checks of this pin passed.
+Nothing has booted.
+The reader has not spoken.
 
 ## Upstream
 
@@ -60,15 +61,17 @@ The phone flavor does not build from that file alone. On this revision:
 
 `talkback/sync-pin.sh` checks out the revision, checks the `LICENSE` sha256,
 and checks that those Maven coordinates and the two headers are still
-present. It does not run Gradle and it does not copy an APK. An image APK
-has to be built from this pin without those closed Play artifacts, and
-without linking the GPL and LGPL braille code into the Apache-2.0 system
-image. That build does not exist yet. `EleTalkBack.apk` is gitignored and
-is not in this commit.
+present. It does not run Gradle and it does not copy an APK. There is no
+licence-clean build of this pin that leaves out Play Services, ML Kit, Play
+Core, liblouis, and BRLTTY. Until that build exists, those components stay
+out of every ELE-OS product. A missing APK is not a slot to fill with the
+stock phone build.
 
 ## Products
 
-Every registered ELE-OS product inherits `talkback/ele_talkback.mk`.
+Every registered ELE-OS product inherits `talkback/ele_talkback.mk`. That
+file sets `ELE_TALKBACK_IN_IMAGE := false` and adds no packages. Lunch does
+not require `EleTalkBack.apk`.
 
 | Product | Role |
 | --- | --- |
@@ -77,21 +80,19 @@ Every registered ELE-OS product inherits `talkback/ele_talkback.mk`.
 | `ele_os_gsi_arm64` | Device-neutral Treble GSI, generic ARM64, no phone maker. |
 | `ele_os_gsi_arm64_lowram` | Same GSI with `ro.config.low_ram=true`. |
 
-The two low-RAM makefiles are prototypes. They keep the screen reader. No
-low-RAM image is published, because nothing has been built or booted. A
-32-bit `arm` GSI is not registered.
+The low-RAM makefiles are prototypes. They do not install the reader. No
+image is published, because nothing has been built or booted. A 32-bit
+`arm` GSI is not registered.
 
-Configuring any of these products without `talkback/EleTalkBack.apk` stops
-in `ele_talkback.mk`. The prebuilt module is an `Android.mk` so a missing
-APK does not fail Soong for lunch targets that are not ELE-OS products.
-`EleTalkBackNotice` is the attribution file in `NOTICE`.
-
-The Cuttlefish product is x86_64. The upstream native filter is ARM only.
-Whether the Java service would start on Cuttlefish is untested.
+Play Services, ML Kit, and Play Core are not wired into these products.
+liblouis (LGPL-2.1-or-later) and BRLTTY (GPL-2.0-or-later) are not in the
+image. Upstream `abiFilters` are `armeabi-v7a` and `arm64-v8a`. Cuttlefish
+is x86_64. That combination is untested, and no service has been started.
 
 ## What a later build has to show
 
-A recorded session on Cuttlefish, and one on the Treble GSI, where this pin's
-reader is the service that speaks. A low-RAM product is unpublished until
-that image boots with the reader. A run of some other TalkBack build is a
-different result.
+A licence-clean APK from this pin, with Play Services, ML Kit, Play Core,
+liblouis, and BRLTTY absent from the image, then a recorded session on
+Cuttlefish and one on the Treble GSI where that build is the service that
+speaks. A low-RAM product stays unpublished until that image boots with the
+reader. A run of some other TalkBack build is a different result.

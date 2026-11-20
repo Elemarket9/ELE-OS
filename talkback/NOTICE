@@ -1,4 +1,4 @@
-EleTalkBack
+EleTalkBack pin
 
 Upstream: https://github.com/google/talkback
 Revision: 229212fdf5842191d0a93fc95d9ca1423b346866
@@ -7,7 +7,7 @@ Application id: com.android.talkback
 Phone flavor.
 
 The upstream LICENSE file at that revision is the Apache License 2.0.
-This NOTICE is ELE-OS attribution for the product package. It is not a
-substitute for upstream's LICENSE, and it is not an APK.
+This file is ELE-OS attribution for the pin. It is not installed as a
+package, it is not an APK, and it is not a substitute for upstream's LICENSE.
 
-The APK is not stored in the ELE-OS git tree. See talkback/README.md.
+The ELE-OS image does not contain this reader. See talkback/README.md.

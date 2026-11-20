@@ -1,5 +1,5 @@
 # Checkout created by talkback/sync-pin.sh. The upstream tree is not vendored.
 /talkback/upstream/
 
-# Built outside git, and only after the license gate in talkback/README.md.
+# Not an image input. A stock TalkBack APK links Play libraries and copyleft braille code.
 /talkback/EleTalkBack.apk

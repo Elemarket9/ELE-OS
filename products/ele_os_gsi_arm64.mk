@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
-# Device-neutral Treble GSI for ELE-OS. Generic ARM64 system image plus the
-# ELE-OS screen reader. No phone maker and no per-device tree.
+# Device-neutral Treble GSI for ELE-OS. Generic ARM64 system image.
+# No phone maker and no per-device tree. The TalkBack policy is inherited
+# and the reader is not installed.
 # Prototype: this product has not been lunched, built, or booted.
 #
 # The inherit list follows build/make/target/product/aosp_arm64.mk at

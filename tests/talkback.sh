@@ -59,13 +59,27 @@ then
     fail "phone-maker target in the TalkBack products"
 fi
 
-grep -q 'PRODUCT_PACKAGES += EleTalkBack EleTalkBackNotice' talkback/ele_talkback.mk \
-    || fail "package list"
-grep -q 'EleTalkBack.apk' talkback/ele_talkback.mk || fail "apk gate"
-grep -F -q '$(error' talkback/ele_talkback.mk || fail "configure error"
-grep -q 'LOCAL_CERTIFICATE := PRESIGNED' talkback/Android.mk || fail "presigned"
-grep -q 'EleTalkBack.apk' talkback/Android.mk || fail "prebuilt src"
-grep -q 'name: "EleTalkBackNotice"' talkback/Android.bp || fail "notice module"
+grep -q 'ELE_TALKBACK_IN_IMAGE := false' talkback/ele_talkback.mk \
+    || fail "reader must stay out of the image"
+if grep -q 'PRODUCT_PACKAGES' talkback/ele_talkback.mk; then
+    fail "ele_talkback.mk adds packages"
+fi
+if grep -n -E 'PRODUCT_PACKAGES|play-services|mlkit|play:core|liblouis|brltty|BUILD_PREBUILT|android_app_import' \
+    talkback/*.mk products/*.mk
+then
+    fail "Google or copyleft package wired into a product"
+fi
+if [ -e talkback/Android.mk ] || [ -e talkback/Android.bp ]; then
+    fail "prebuilt module would accept an APK"
+fi
+for phrase in \
+    "The reader is not in the image." \
+    "Lunch targets do not require an APK." \
+    "Nothing has booted." \
+    "The reader has not spoken."
+do
+    grep -F -q "$phrase" talkback/README.md || fail "README missing $phrase"
+done
 
 # device/ele/os/PATH -> PATH, for inherit-product lines in this overlay.
 inherits_of() {

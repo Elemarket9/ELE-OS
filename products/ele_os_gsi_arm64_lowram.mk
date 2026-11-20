@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-# Low-RAM Treble GSI. Same generic ARM64 system image and the same screen
-# reader, with ro.config.low_ram set. Prototype makefile: no image has been
-# built or booted, and no install image is published.
+# Low-RAM Treble GSI. Same generic ARM64 system image and the same TalkBack
+# policy, with ro.config.low_ram set. The reader is not installed.
+# Prototype makefile: no image has been built or booted, and no install
+# image is published.
 
 $(call inherit-product, device/ele/os/products/ele_os_gsi_arm64.mk)
 
