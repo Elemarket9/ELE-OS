@@ -1,0 +1,19 @@
+# Faith prototype weight pin. Parsed as key=value. Do not source this file.
+# The weight is not the product default. It is the file the host runtime fetches.
+runtime_name=llama.cpp
+runtime_license=MIT
+runtime_upstream=https://github.com/ggml-org/llama.cpp
+runtime_tag=v1.0.0
+runtime_commit=b1b770d90d94cad9e9ea5b993bdbc383a522fb28
+model_name=SmolLM2-135M-Instruct
+model_publisher=HuggingFaceTB
+model_license=Apache-2.0
+model_license_url=https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct/blob/main/LICENSE
+model_upstream=https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct
+model_upstream_revision=12fd25f77366fa6b3b4b768ec3050bf629380bac
+model_weights_repo=QuantFactory/SmolLM2-135M-Instruct-GGUF
+model_weights_file=SmolLM2-135M-Instruct.Q4_K_M.gguf
+model_weights_url=https://huggingface.co/QuantFactory/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct.Q4_K_M.gguf
+model_sha256=8030f04528538d47bda434f6f0bdf3952c40a58123e4d5e755332f23731a8684
+model_bytes=105454144
+model_quant=Q4_K_M
