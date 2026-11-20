@@ -73,3 +73,23 @@ and thermal conditions, recording cold app launch time, boot-to-interactive
 time, and background notification delivery alongside battery use. Android
 compatibility checks must include calls, camera, notifications, and app
 installation after authorized reactivation.
+
+### Setup session and reset exercise
+
+The reactivation session now issues a random challenge bound to the enrolled
+device and owner key. Starting another challenge replaces the old one. The
+caller receives at most one successful grant for a challenge, even when
+requests race. Recreating the session drops all outstanding challenges.
+
+Run `sh tests/run.sh` with a C++17 compiler and OpenSSL development headers.
+The integration test writes a fixture enrollment outside a temporary userdata
+directory, removes the userdata directory, reloads the enrollment, and exercises
+owner proof and replay rejection. The fixture models persistence only. A service
+must still authenticate the enrollment record, enforce one live setup session
+per device, handle crashes when committing activation, and gate every normal
+setup path. Recovery, hardware-backed storage, and bootloader integration remain
+device work.
+
+After launching the ELE-OS Cuttlefish image, run
+`sh tests/check-boot.sh SERIAL` from a Linux host with adb and GNU timeout.
+It waits for boot completion and checks the ELE-OS product and memory report.
