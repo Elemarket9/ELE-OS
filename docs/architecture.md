@@ -9,8 +9,8 @@ ELE-OS targets the whole phone market. Current flagships, mid-range phones,
 low-end phones, and older devices are all in scope. Reviving old and low-end
 phones is one pillar. The pillars that apply on every class are performance
 efficiency, security with signed updates, privacy and owner control,
-owner-controlled lost-device recovery, and a built-in assistant that runs
-on the device.
+owner-controlled lost-device recovery, and Faith, the built-in assistant,
+which runs on the device.
 
 ## Base OS
 
@@ -442,15 +442,21 @@ Out of scope on purpose: a hidden unlock for law enforcement, tracking a
 phone whose owner has not turned lost mode on, and matching the coverage of
 Apple's or Google's find-my networks.
 
-## Built-in assistant
+## Faith
 
-ELE-OS has a built-in assistant in the same role as Google Assistant or Siri:
-the owner can speak or type, and the phone can answer and can take a limited
-set of actions. That is the role. It is not a claim about answer quality,
-latency, or language coverage. Nothing in this section has been built, and
-this repository contains no model and no assistant package.
+Faith is ELE-OS's built-in assistant, in the same role as Google Assistant or
+Siri: the owner can speak or type, and the phone can answer and can take a
+limited set of actions. That is the role. It is not a claim about answer
+quality, latency, or language coverage. The name is decided. Nothing in this
+section has been built, and this repository contains no model and no Faith
+package.
 
-The assistant does not use Google services. No Gemini, no Google speech
+The suggested wake phrase is "Hey Faith". It is the phrase a new install
+listens for once the owner turns listening on. The owner can replace it with
+another phrase. An engine that cannot be pointed at a phrase the owner chose
+does not meet this requirement. The engine itself is still unchosen.
+
+Faith does not use Google services. No Gemini, no Google speech
 recognition, no Google text-to-speech, and no Google account. AOSP's speech
 APIs on a device without Play are not a substitute we can point at and call
 done.
@@ -470,19 +476,20 @@ design. They are candidates, not a promise that a particular binary is fast.
 | [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and [OpenAI Whisper](https://github.com/openai/whisper) | Both engines are MIT (ggml authors; OpenAI, 2022) | Eligible on-device speech-to-text. A weight file ships only when that file's own license allows redistribution. |
 | [Piper](https://github.com/OHF-Voice/piper1-gpl) | Current engine is GPL-3.0-or-later. The project's [licensing note](https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/LICENSING.md) says Piper grants no license over voice models. Many published English voices are fine-tuned from the Lessac corpus, which that note describes as limited to research and excluding commercial use. | "Piper-class" means local neural text-to-speech. This GPL-3 engine is not linked into the Apache-2.0 system image. It can be considered only as a separate process, and only with a voice whose model card allows us to redistribute it. A Lessac-derived voice is not the default. |
 | AOSP Pico TTS (svox) | Apache-2.0, already in AOSP | License-clean speech for early builds. It is not a neural voice, and it is not the quality bar. |
-| [openWakeWord](https://github.com/dscripka/openWakeWord) | Apache-2.0 | Eligible wake-word candidate. The engine is not chosen. Proprietary detectors, including Picovoice Porcupine, are not eligible. |
+| [openWakeWord](https://github.com/dscripka/openWakeWord) | Apache-2.0 | Eligible wake-word candidate for the phrase "Hey Faith". The engine is not chosen. Proprietary detectors, including Picovoice Porcupine, are not eligible. |
 
 A model weight is a separate work from the runtime. Llama, Gemma, Qwen, and
 other families use their own licenses, some of which restrict use or
 redistribution. The default model is an open decision. Until it is chosen,
 no weight file is added to the tree.
 
-### What the owner can do with it
+### What the owner can do with Faith
 
 Text input always works. Voice input uses the on-device recognizer. Spoken
-replies use the on-device synthesizer. A wake word, once an engine is chosen,
-listens only while the owner has turned that listening on. The microphone is
-not held open on a phone where the wake word is off.
+replies use the on-device synthesizer. Once an engine is chosen, Faith
+listens for "Hey Faith", or for the phrase the owner set instead, only while
+the owner has turned that listening on. The microphone is not held open when
+listening is off.
 
 Actions go through a small tool API, one Android intent per action, not a
 blanket privilege. Each category has its own switch, off until the owner
@@ -496,14 +503,14 @@ turns that category on:
 
 Answering a question does not require those switches. A category that is off
 does not run, even if the model emits the tool call. The gate is code in our
-process, checked before the intent is fired. The assistant does not get a
+process, checked before the intent is fired. Faith does not get a
 signature permission that skips the switch.
 
 ### Device class
 
 The model file, its runtime, the speech engines, and the key/value cache
 share RAM with the system and the user's apps. On a phone with about 2–3 GB
-of RAM that sum can push the low-memory killer into killing the assistant or
+of RAM that sum can push the low-memory killer into killing Faith or
 the foreground app. On a flagship there is room for a larger local model.
 Those are constraints, not measurements. ELE-OS has not recorded a resident
 set, a tokens-per-second figure, or a word-error rate.
@@ -517,22 +524,22 @@ set, a tokens-per-second figure, or a word-error rate.
   owner opts into a cloud model under the policy still to be written. If
   neither path has been measured, the device page says the local model is
   not available. Text, and any action categories the owner has enabled, can
-  still exist without a large model. That is a reduced assistant, and the
-  page says so.
+  still exist without a large model. The page says Faith is present and
+  that the local model is not.
 - **Mid-range.** Whichever of those two paths the measurement supports. The
   class does not get the flagship model by default.
 
-Wake-word listening and a large model both cost battery. They stay off until
-the owner enables them, and Track B measures them before either becomes a
-default.
+Listening for "Hey Faith", and keeping a large model loaded, both cost
+battery. They stay off until the owner enables them, and Track B measures
+them before either becomes a default.
 
 ### What this does not include
 
 No quality comparison with Google Assistant, Siri, or Gemini. No claim that
 every language Whisper or Piper can be pointed at will ship. No always-on
-cloud transcript. No provider compiled in as a requirement. The assistant's
-name, the default model, the wake-word engine, and the rest of the cloud
-policy are listed in [open-questions.md](open-questions.md).
+cloud transcript. No provider compiled in as a requirement. The default
+model, the wake-word engine, and the rest of the cloud policy are listed in
+[open-questions.md](open-questions.md).
 
 ## Performance strategy
 
@@ -564,7 +571,7 @@ Levers that are real, and the class they belong to:
 | Leave GMS out of the system image | Every class | Largest obvious source of resident vendor software on a stock Play image. Many apps depend on it. Removing it is a compatibility decision, not a free speedup. We have not measured the resident set. |
 | Do not start services this project does not need | Every class | Each removed package needs a reason, and the accessibility checklist has to pass afterward. |
 | Our own daemons, including a recovery check-in | Every class | A locate client that wakes the radio is an efficiency regression until its cost is measured. Default is off. |
-| Assistant model and wake word | Every class, different weights | Both stay off until the owner enables them. Resident set is measured per class before a model becomes the default. A 2–3 GB phone may be unable to keep a flagship-sized model loaded. |
+| Faith's model and wake phrase | Every class, different weights | Both stay off until the owner enables them. The suggested phrase is "Hey Faith", and the owner can change it. Resident set is measured per class before a model becomes the default. A 2–3 GB phone may be unable to keep a flagship-sized model loaded. |
 | `ro.config.low_ram` | Low-RAM products only | AOSP's [`lmkd`](https://source.android.com/docs/core/perf/lmkd) uses this property to distinguish low-RAM behavior from high-performance behavior. Setting it on a flagship product changes kill behavior and is not the default. The Cuttlefish product does not set it today. |
 | zram and similar kernel swap compression | Where the kernel we boot supports it | Common on low-RAM Android products. Adopting it is a measured change per device, not a flag in this overlay. |
 | Android Go configuration | Reference for the low-RAM pillar | Google's configuration, trademark, and certification. We may reuse the same kind of AOSP flags. We do not claim a Go device. |

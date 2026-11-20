@@ -285,7 +285,7 @@ unless a note explains a replacement that has been tested. We are not
 claiming a certification, and we are not claiming a better reader than a
 current Play Store TalkBack or than VoiceOver.
 
-## Track H — Built-in assistant
+## Track H — Faith
 
 Depends on A1 before any on-device run is claimed. The design and the license
 limits are in the architecture doc. No milestone below is done.
@@ -331,13 +331,16 @@ device (text, audio, or both).
 Evidence: two memory readings, labelled by device class. No cross-class
 comparison presented as a score.
 
-**H5. Wake word.** Starts after the engine is chosen. Listening is off until
-the owner enables it. The detector runs on the device. Proprietary engines
-are out. Battery and extra RAM are part of the Track B note before the
-detector is on by default. The default stays off.
+**H5. Wake phrase.** Starts after the engine is chosen. The phrase shipped
+on a new install is "Hey Faith". The owner can change it, and the detector
+has to follow that change. Listening is off until the owner enables it. The
+detector runs on the device. Proprietary engines are out. Battery and extra
+RAM are part of the Track B note before listening is on by default. The
+default stays off.
 
-Evidence: the wake word starts a session when enabled, and the microphone
-path is idle when it is disabled.
+Evidence: "Hey Faith" starts a session when listening is enabled, a phrase
+the owner set instead also starts a session, and the microphone path is idle
+when listening is disabled.
 
 ## Track G — What we will not schedule as a promise
 
@@ -351,8 +354,8 @@ path is idle when it is disabled.
   can legally document.
 - The External devices app. It stays in the tree as an optional experiment
   and is not part of this roadmap.
-- A claim that the assistant matches Google Assistant, Siri, or any cloud
-  model on quality or speed.
+- A claim that Faith matches Google Assistant, Siri, or any cloud model on
+  quality or speed.
 - A Google speech, Gemini, or other Google-hosted assistant backend.
 - Linking the GPL-3 Piper engine into the Apache-2.0 system image.
 

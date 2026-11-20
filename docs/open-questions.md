@@ -128,20 +128,32 @@ experiments and are not pillars. Leaving the sources in the tree keeps the
 work. Installing the app on every phone would make an unvalidated experiment
 look like a feature.
 
-## Open: the assistant
+## Open: Faith
 
-The assistant is a pillar. These four choices are not made. Constraints that
-are already fixed sit in the architecture doc: on-device first, no Google
-backend, MIT runtimes for the language model and for Whisper-class speech
-recognition, GPL-3 Piper not linked into the system image, action categories
-off until the owner enables each one, and no published quality or speed
-numbers until a run exists.
+Faith is the built-in assistant. The name is decided. Three choices are not:
+the default model, the wake-word engine, and the cloud policy. Constraints
+that are already fixed sit in the architecture doc: on-device first, no
+Google backend, MIT runtimes for the language model and for Whisper-class
+speech recognition, GPL-3 Piper not linked into the system image, action
+categories off until the owner enables each one, and no published quality or
+speed numbers until a run exists.
 
-### Assistant name
+### Name
 
-Unset. Docs say "the assistant" until the owner picks a name. The name should
-be one we can use without colliding with Google Assistant, Siri, or another
-product's mark.
+**Decided.** The assistant is named Faith.
+
+**Why.** The owner chose it. The docs use that name rather than "the
+assistant" alone. It is not Google Assistant and not Siri. We have not
+commissioned a trademark search; if a conflict shows up later, the owner
+picks the replacement.
+
+### Wake phrase
+
+**Decided as the default, and changeable.** A new install listens for
+"Hey Faith" once the owner turns listening on. Settings let the owner
+replace that phrase. The wake-word engine is still unchosen. An engine that
+cannot be aimed at "Hey Faith", and at a phrase the owner types instead,
+does not qualify.
 
 ### Default model
 
@@ -153,10 +165,11 @@ family (Llama, Gemma, Qwen, or any other) is selected.
 
 ### Wake-word engine
 
-Unset. It has to be open source, on-device, and off until the owner enables
-it. openWakeWord (Apache-2.0) is eligible to evaluate. Picovoice Porcupine
-and other proprietary detectors are not. The choice waits on H1–H3 so
-listening is not the first thing we build.
+Unset. The phrase is "Hey Faith" unless the owner changes it. The detector
+has to be open source, on-device, and off until the owner enables it.
+openWakeWord (Apache-2.0) is eligible to evaluate. Picovoice Porcupine and
+other proprietary detectors are not. The choice waits on H1–H3 so listening
+is not the first thing we build.
 
 ### Cloud policy
 
