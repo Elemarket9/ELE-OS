@@ -10,7 +10,7 @@ import java.util.Map;
  * The cap is an app resource budget, not a controller's hardware link limit.
  */
 final class LinkQueue {
-    enum State { QUEUED, OPENING, READY }
+    enum State { QUEUED, OPENING, READY, BACKOFF }
     static final int LIMIT = 8;
     private final Map<String, State> links = new LinkedHashMap<>();
 
@@ -32,6 +32,19 @@ final class LinkQueue {
     boolean ready(String id) {
         if (links.get(id) != State.OPENING) return false;
         links.put(id, State.READY);
+        return true;
+    }
+    boolean defer(String id) {
+        State current = links.get(id);
+        if (current != State.OPENING && current != State.READY) return false;
+        links.put(id, State.BACKOFF);
+        return true;
+    }
+    boolean requeue(String id) {
+        if (links.get(id) != State.BACKOFF) return false;
+        // Retry goes to the tail, so it cannot monopolize the handshake slot.
+        links.remove(id);
+        links.put(id, State.QUEUED);
         return true;
     }
     State state(String id) { return links.get(id); }

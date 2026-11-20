@@ -2232,16 +2232,25 @@
       "subsystem": "Networking and internet",
       "functional_requirements": "Retry recoverable link/session failures using bounded backoff and jitter.",
       "architectural_dependencies": "sockets, device drivers, identity and firewall",
-      "implementation_paths": [],
-      "workstream": "Networking and internet",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Inject repeated failures; verify recovery without retry storms.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/BluetoothActivity.java",
+        "peripherals/src/org/eleos/peripherals/LinkQueue.java",
+        "peripherals/src/org/eleos/peripherals/RetryBudget.java",
+        "tests/LinkQueueTest.java"
       ],
-      "commit_references": []
+      "workstream": "Networking and internet",
+      "integration_interfaces": [
+        "BluetoothGatt callbacks; Android Handler; FIFO retry admission"
+      ],
+      "security_considerations": "Explicit opt-in, bonded-only, bounded retries, no background reconnection; cancellation and resource budgets enforced.",
+      "verification_requirements": "Inject repeated failures; verify recovery without retry storms.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Physical BLE link loss, network socket/cellular/Wi-Fi retry integration and hardware behavior unverified."
+      ],
+      "commit_references": [
+        "749f8d8b6e819d04b6e40085aec372a5e95888a4"
+      ]
     },
     {
       "id": "EOS-128",
@@ -2286,7 +2295,8 @@
       "implementation_paths": [
         "peripherals/src/org/eleos/peripherals/BluetoothActivity.java",
         "peripherals/src/org/eleos/peripherals/LinkQueue.java",
-        "tests/LinkQueueTest.java"
+        "tests/LinkQueueTest.java",
+        "peripherals/src/org/eleos/peripherals/RetryBudget.java"
       ],
       "workstream": "Networking and internet",
       "integration_interfaces": [
@@ -2299,7 +2309,8 @@
         "Real controller concurrency, cross-profile radio scheduling and hardware tests pending."
       ],
       "commit_references": [
-        "047c137548319d426bc708bd6eae50d5da7ad8f8"
+        "047c137548319d426bc708bd6eae50d5da7ad8f8",
+        "749f8d8b6e819d04b6e40085aec372a5e95888a4"
       ]
     },
     {

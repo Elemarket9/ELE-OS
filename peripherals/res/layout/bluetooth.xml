@@ -15,6 +15,9 @@
         <Button android:id="@+id/bt_pair" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:minHeight="48dp"
             android:text="@string/bt_pair" />
+        <CheckBox android:id="@+id/bt_retry" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:minHeight="48dp"
+            android:checked="false" android:text="@string/bt_retry_opt_in" />
         <Button android:id="@+id/bt_connect" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:minHeight="48dp"
             android:text="@string/bt_connect" />
