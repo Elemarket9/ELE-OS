@@ -11,7 +11,8 @@ cxx=${CXX:-c++}
     tests/reactivation.cpp -lcrypto -o "$tmp/session"
 mkdir "$tmp/fixture"
 "$tmp/session" "$tmp/fixture"
-"$cxx" -std=c++17 -Wall -Wextra -Werror -pthread -Iactivation \
-    activation/owner_command.cpp tests/owner_command.cpp -lcrypto -o "$tmp/commands"
-"$tmp/commands"
+for extra in tests/host-*.sh; do
+    [ -f "$extra" ] || continue
+    sh "$extra"
+done
 sh tests/status.sh
