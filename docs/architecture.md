@@ -32,7 +32,7 @@ product.
 | [GrapheneOS](https://grapheneos.org/) | A hardened Android OS with production support for Pixel devices. Relocks the bootloader onto its own verified-boot key. Adds userspace hardening and extra permission toggles. The [FAQ](https://grapheneos.org/faq) states that most other hardware cannot meet the bar, and that GrapheneOS is not a Generic System Image. | The reference for hardening and for the network and sensors permission toggles. We do not ship GrapheneOS, do not claim its attestation story, and do not imply a non-Pixel device gained those properties by installing ELE-OS. |
 | [CalyxOS](https://calyxos.org/) | A privacy-focused Android OS. As of its [device-support page](https://calyxos.org/docs/guide/device-support/) in 2026, supported hardware includes Pixels, Fairphone, some Motorola moto g models, and SHIFT. [Datura](https://calyxos.org/docs/tech/datura-details/) is its per-app firewall. microG is optional. | A reference for per-app network controls on more than one brand. microG and signature spoofing are a compatibility and security trade-off, not a default here. |
 | [/e/OS](https://doc.e.foundation/os/product-description/) (Murena) | A de-Googled Android system. Murena's product description says it runs on more than 200 models and includes microG and Murena online services. | A reference for wide device coverage and for a usable de-Googled image. Their cloud account is part of that product. ELE-OS recovery must work with keys the owner holds, with no project account required. |
-| [Treble / GSI](https://source.android.com/docs/core/tests/vts/gsi) | Project Treble splits the vendor implementation from the Android framework. A Generic System Image is a system image meant to boot on a Treble device. AOSP documents GSI as the image used for VTS and CTS-on-GSI, not as a product ROM. | A smoke test during bring-up. The vendor partition, kernel, and firmware stay on the vendor's last build, so a GSI does not deliver the update pillar. Flashing can fail when the system partition is too small. An unlocked bootloader is required, and unlocking wipes user data on compliant devices. |
+| [Treble / GSI](https://source.android.com/docs/core/tests/vts/gsi) | Project Treble splits the vendor implementation from the Android framework. A Generic System Image is a system image built to boot on a Treble-compliant device. AOSP uses GSIs for VTS and CTS-on-GSI. | ELE-OS's hardware image for many phones, with no named partner. The vendor partition, kernel, and firmware stay on the phone's existing build, so a GSI does not patch those. Flashing can fail when the system partition is too small. An unlocked bootloader is required, and unlocking wipes user data on compliant devices. A GSI is not a relockable Tier 3 product. |
 
 ### Working decision
 
@@ -43,12 +43,20 @@ statement that the tag contains the latest security patches. Moving it is an
 open question, because `android-latest-release` moves when Google publishes
 source.
 
-Handset builds are per-device trees placed at `device/ele/<codename>` in an
-AOSP tree, in their own git repositories, plus a kernel repository. Where an
-existing LineageOS or AOSP device tree is licensed so we can reuse it, we
-start from that tree instead of pretending to write one from nothing. We do
-not fork LineageOS as a whole, and we do not take their release keys or their
-updater.
+ELE-OS has no phone partner and does not pick a first handset. The hardware
+image is a Treble GSI, so the same system image can boot on many
+Treble-compliant phones. That product is not registered in this tree yet.
+The intended lunch target is `ele_os_gsi_arm64`, built from the AOSP generic
+system image plus the ELE-OS packages. `arm` is added only if a porter shows
+a device that needs it.
+
+A phone maker or a porter who wants a maintained device, vendor updates, or
+Tier 3 follows the onboarding kit in [device-support.md](device-support.md).
+The result is a per-device tree at `device/ele/<codename>` in its own git
+repository, plus a kernel repository. Where an existing LineageOS or AOSP
+device tree is licensed so they can reuse it, they start from that tree. We
+do not fork LineageOS as a whole, and we do not take another project's
+release keys or updater.
 
 A handset tracks the newest AOSP release its vendor code can boot. A current
 flagship and a 2018 phone will not share that release. Android 16 on a device
@@ -202,9 +210,11 @@ branch tracks security releases as often as we can actually build them.
 
 Two clocks run at once, and they are not the same clock:
 
-- Vendor firmware and the vendor security patch move when the vendor
-  publishes binaries we can install. Pixel updates have historically been
-  monthly. That cadence is the vendor's, and it stops when they say it stops.
+- Vendor firmware and the vendor security patch move when that vendor
+  publishes binaries we can install. Some vendors ship those about monthly.
+  The cadence belongs to the vendor, and it stops when they say it stops.
+  A GSI does not carry this clock: the vendor image stays the one already
+  on the phone.
 - Platform source moves when AOSP publishes it. AOSP's 2026 documentation
   says source is published in Q2 and Q4. A monthly Android Security Bulletin
   does not, by itself, put that month's platform fixes in a tree we can
@@ -214,12 +224,9 @@ Two clocks run at once, and they are not the same clock:
 Kernel fixes we write ourselves can land between those drops. That work is
 per device. It is not a claim that the whole bulletin was applied.
 
-For the first phone, the Pixel 8, Google's published policy is seven years
-of OS and security updates from first availability on the US Google Store
-([Pixel update policy](https://support.google.com/pixelphone/answer/4457705)).
-The Pixel 8 went on sale in October 2023, so the maintained branch runs
-through October 2030 unless Google publishes a different end date. CalyxOS's
-device-support table uses that same month.
+There is no first-phone end date, because there is no partner phone. When a
+device is onboarded, its page states the vendor's published end of support.
+Until that page exists, ELE-OS does not quote a year.
 
 After the vendor stops, the branch is labelled **extended**. An extended
 branch lists only the fixes that build contains: platform changes we can
@@ -515,10 +522,11 @@ the foreground app. On a flagship there is room for a larger local model.
 Those are constraints, not measurements. ELE-OS has not recorded a resident
 set, a tokens-per-second figure, or a word-error rate.
 
-- **Flagship, including the Pixel 8.** The local model is the default path.
-  The first runtime is llama.cpp on the CPU. A GPU backend or a vendor NPU
-  is adopted only after a run on that device shows it works. A Pixel Tensor
-  processor is not, by itself, a llama.cpp accelerator we can claim.
+- **Flagship class.** The local model is the default path on a phone with
+  room for it. The first runtime is llama.cpp on the CPU. A GPU backend or a
+  vendor NPU is adopted only after a run on that device shows it works. A
+  vendor accelerator is not a llama.cpp backend we can claim from the chip's
+  name.
 - **Low-RAM and many older phones.** The image carries a smaller local model
   when a measured run shows the phone still usable with it loaded, or the
   owner opts into a cloud model under the policy still to be written. If
@@ -594,8 +602,8 @@ tier.
 - **Current flagship and upper tier**, including phones the vendor still
   updates. The owner is choosing keys and update policy. On firmware, the
   vendor may remain the faster source until they stop.
-- **Mid-range**, the bulk of the market. Same pillars, often a weaker
-  bootloader story than a Pixel.
+- **Mid-range**, the bulk of the market. Same pillars. Many of these phones
+  unlock and still cannot relock onto a custom verified-boot key.
 - **Low-end and older**, including phones around 2–3 GB of RAM and phones
   after the vendor's last security update. The revival pillar. Efficiency
   work is mandatory on this class. A 1 GB phone may be unable to run any
@@ -611,30 +619,18 @@ tier.
 | 2 | Maintained | Any class whose bootloader unlocks and whose kernel we can build from source | Daily-driver candidate. Signed user or userdebug builds as the open-questions decision allows. OTA for the parts we rebuild, for as long as that branch is maintained. Encryption on, or the exception documented. Reset-surviving theft lock is not claimed. |
 | 3 | Relockable | Devices that implement a user-settable verified-boot key and a rollback story we can demonstrate | Tier 2, plus the bootloader locked to ELE-OS, owner record outside userdata, setup gate on a user build. Hardware-specific hardening (memory tagging, secure element) is listed only when that board has it. This tier is where a flagship with a modern bootloader belongs if we support it. It is not implied by the price of the phone. |
 
-No handset is in any tier yet. Cuttlefish stays the shared target until a
-boot of `ele_os_cf_x86_64` is recorded. The first real phone after that is a
-Google Pixel 8, codename `shiba`, aimed at Tier 3.
+No handset is in any tier yet, and none is named. ELE-OS has no phone
+partner. Cuttlefish is the shared development target. The hardware image is
+a Treble GSI, which can boot on many Treble-compliant phones and stays at
+Tier 1 for each phone until a porter completes the onboarding kit. Tier 2
+and Tier 3 arrive per device, when that device's evidence says so. A GSI
+cannot be Tier 3: the bootloader is unlocked, and the kernel and vendor
+image are not ours. GrapheneOS states the same limit for their own work.
+They are a reference, not a partner, and ELE-OS does not ship their OS.
 
-Why this model, and not a newer Pixel or the Pixel 8 Pro: the owner asked
-for a recent Pixel in the Pixel 8 class, with a relockable verified boot, a
-custom key, published kernel source, and strong upstream support. AOSP's
-[Pixel kernel guide](https://source.android.com/docs/setup/build/building-pixel-kernels)
-(page updated 2026-07-13) lists `shiba` and the Pixel 8 Pro (`husky`) on the
-kernel branch `android-gs-shusky-6.1-android16`, GKI `android14-6.1`. Pixels
-implement a user-set verified-boot key via `avb_custom_key`. GrapheneOS and
-CalyxOS both ship relockable builds for `shiba`. Pixel 8 and later have
-hardware memory tagging. The non-Pro board avoids the Pro's extra camera
-hardware on the first port. The Pixel 8a uses a different kernel branch.
-Pixel 9 and later have a longer remaining vendor window and can follow; the
-same kernel guide's table stops at the Pixel 9a and does not list a Pixel 10
-or Pixel 11 branch, so those are a worse first target until that source link
-is checked. A carrier-sold unit whose OEM unlocking toggle cannot be enabled
-is not the unit we buy.
-
-`shiba` is a target, not a supported device. There is no device tree, no
-factory-image pin, and no boot log. Admission criteria are in
-[device-support.md](device-support.md). A low-RAM or older phone is a later
-milestone, after this port has a recorded boot.
+The onboarding kit is [device-support.md](device-support.md). A phone maker
+or any porter can add a device later. Nothing in this repository is a
+promise that a particular brand will boot.
 
 ## Licensing
 

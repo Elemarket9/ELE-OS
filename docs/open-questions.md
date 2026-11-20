@@ -20,34 +20,28 @@ and mid-range devices. This sentence names the market and the four jobs
 without claiming a win over Android or iOS overall. We do not change GitHub
 settings from a pull request.
 
-### 2. First device
+### 2. Devices
 
-**Decision.** Cuttlefish (`ele_os_cf_x86_64`) stays the shared target until a
-boot is recorded. The first real phone is a Google Pixel 8, codename `shiba`,
-aimed at Tier 3. A low-RAM or older phone is a later milestone (roadmap A3),
-after that Pixel has booted.
+**Decision.** ELE-OS does not target a Google Pixel, or any other named
+phone. There is no phone partner. Cuttlefish (`ele_os_cf_x86_64`) is the
+shared development target until a boot is recorded, and it stays the place
+shared components are proven. The hardware image is a Treble GSI
+(`ele_os_gsi_arm64`, not in the tree yet) so one system build can boot on
+many Treble-compliant phones. A phone maker or a porter adds a specific
+device later by following the onboarding kit in
+[device-support.md](device-support.md).
 
-**Why this model.** It has to be a recent Pixel with a relockable verified
-boot, a user-set custom key, published kernel source, and strong upstream
-support. AOSP's Pixel kernel guide (updated 2026-07-13) lists `shiba` and the
-Pixel 8 Pro (`husky`) on `android-gs-shusky-6.1-android16`. Pixels enroll a
-custom key with `avb_custom_key`. GrapheneOS and CalyxOS already relock
-production builds on `shiba`. Pixel 8 and later have hardware memory tagging.
-Google's update policy is seven years from first US store availability;
-the Pixel 8 went on sale in October 2023, so the vendor window runs through
-October 2030.
+**Why.** A partner phone would make the project look tied to one vendor.
+The owner has none. A GSI is the honest way to reach many phones before
+anyone maintains a device tree. The limit is part of the decision: a GSI
+keeps the phone's vendor image, kernel, and firmware, needs an unlocked
+bootloader, and cannot be Tier 3. Reset-surviving theft lock and a kernel
+we build wait until a porter finishes the kit for that model.
 
-**Why not the neighbours.** The Pixel 8 Pro shares that kernel and adds
-camera hardware the first port does not need. The Pixel 8a has its own kernel
-branch and a later vendor end date (May 2031 on CalyxOS's table), with less
-accumulated port history than `shiba`. Pixel 9 and later have longer
-remaining vendor support and can be later targets. That same kernel guide
-stops at the Pixel 9a and does not list a Pixel 10 or Pixel 11 branch, so
-those models are not the first port until their source URL is checked the
-same way. A carrier unit whose OEM unlocking switch cannot be enabled cannot
-be the unit we use.
-
-`shiba` is not supported yet. There is no device tree and no boot log.
+**What was withdrawn.** An earlier decision named the Pixel 8 (`shiba`) as
+the first handset and aimed it at Tier 3. That choice is cancelled. Pixel
+devices remain eligible later, on the same terms as any other phone. They
+are not the plan.
 
 ### 3. Release keys
 
@@ -78,14 +72,16 @@ ships firmware and security updates. The branch tracks those releases as
 often as we can build them. After the vendor stops, the branch is labelled
 extended and contains only the fixes we can actually deliver.
 
-**What "monthly where possible" can mean.** Pixel firmware drops have
-historically been monthly, and we take a drop when Google publishes a binary
-we can install. Platform source is a different schedule. AOSP's 2026
+**What "monthly where possible" can mean.** Some vendors ship firmware
+binaries about monthly. We take a drop when that vendor publishes one we can
+install, and only for a device someone has onboarded. A GSI does not get
+those binaries. Platform source is a different schedule. AOSP's 2026
 documentation says source is published in Q2 and Q4. A monthly security
 bulletin without a published source tag is not a monthly platform update.
 Release notes say which of platform source, vendor binary, or neither moved.
-For the Pixel 8 the maintained window is October 2023 through October 2030
-under Google's seven-year policy, unless Google publishes another end date.
+The maintained window is whatever end date that vendor publishes, written
+on the device page when the device is added. ELE-OS does not set one year
+for every phone.
 
 ### 5. First extra permission
 
@@ -190,18 +186,19 @@ source is published in Q2 and Q4 and that `android-latest-release` tracks the
 newest drop.
 
 Working assumption: do not move the pin until a Cuttlefish boot is recorded
-on the current tag. The Pixel 8 tree then uses the newest AOSP release that
-device's vendor code can boot. Moving the virtual product to
-`android-latest-release` is a separate change because the branch moves
-underneath comparisons.
+on the current tag. The GSI tracks that same pin until a boot says otherwise.
+An onboarded device uses the newest AOSP release that device's vendor code
+can boot. Moving the virtual product to `android-latest-release` is a
+separate change because the branch moves underneath comparisons.
 
-### Starting the Pixel tree from an existing port
+### Starting a device tree from an existing port
 
-Working assumption: reuse an existing AOSP or LineageOS device tree for
-`shiba` when the license allows, build it against the AOSP tag we can boot,
-and do not import that project's release keys, updater, or policies we have
-not adopted. LineageOS's charter requires userdebug and disables system
-verity on those builds. Tier 3 images for ELE-OS are user builds.
+Working assumption: when a porter onboards a phone, they may reuse an
+existing AOSP or LineageOS device tree when the license allows, build it
+against the AOSP tag that phone can boot, and not import that project's
+release keys, updater, or policies ELE-OS has not adopted. LineageOS's
+charter requires userdebug and disables system verity on those builds.
+Tier 3 images for ELE-OS are user builds.
 
 ### Google software and app compatibility
 
@@ -236,9 +233,9 @@ lock is opt-in at enrollment, with that warning on the screen.
 LineageOS ships official builds as userdebug. A theft lock and a setup gate
 do not hold on a build where `adb root` works.
 
-Working assumption: userdebug for Cuttlefish development and for Tier 1. A
-user build is required before the Pixel 8 is described as a daily driver
-with a lock, and before Tier 3.
+Working assumption: userdebug for Cuttlefish, for the GSI bring-up, and for
+Tier 1. A user build is required before any onboarded device is described as
+a daily driver with a lock, and before Tier 3.
 
 ### Reproducible builds
 

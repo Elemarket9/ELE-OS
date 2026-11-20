@@ -11,10 +11,10 @@ There are no calendar dates. There are no target percentages, frame rates, or
 RAM savings. A measurement that shows no improvement, or a regression, closes
 the measurement milestone and sends the change back.
 
-Cuttlefish stays the shared target until `ele_os_cf_x86_64` boots. The first
-real phone after that is a Pixel 8 (`shiba`). A low-RAM or older phone is a
-later milestone. That order is a bring-up decision. The project scope stays
-the whole market.
+Cuttlefish stays the shared development target until `ele_os_cf_x86_64`
+boots. The hardware image is a Treble GSI, not a named phone. A phone maker
+or a porter adds a device later through the onboarding kit. ELE-OS has no
+phone partner. The project scope stays the whole market.
 
 ## How a milestone is recorded
 
@@ -48,24 +48,26 @@ image is identified in the note so later comparisons have a baseline.
 Evidence: the command transcript. A failed build is recorded as a failure,
 with the missing host feature (KVM, RAM, disk), and does not count.
 
-**A2. First handset: Pixel 8 (`shiba`).** Starts only after A1. The unit must
-be one on which OEM unlocking can be turned on. The device page records class
-(current flagship) and the tier the evidence supports. The aim is Tier 3.
-Until relock, a custom AVB key, and the theft-lock checks pass, the page
-stays at Tier 1 or Tier 2. Tier 1 is a boot with a broken-hardware list.
-Tier 2 adds the maintained-device checklist (calls, mobile data, Wi-Fi,
-audio, display, camera, app install, encryption), each marked pass or fail.
+**A2. ELE-OS GSI boots on a Treble phone.** Starts only after A1. Add the
+`ele_os_gsi_arm64` product, build it from the pinned manifest, and boot it
+on one Treble-compliant phone the tester is allowed to wipe. The note names
+the model, what worked, and what failed. The boot is Tier 1 for that phone.
+It does not add the phone to a supported list, and it does not claim Tier 3.
+The bootloader stays unlocked. The vendor image is the one that was already
+installed.
 
-Evidence: a second person can install from the written steps, or the note
-says they have not and the device stays Tier 1. The status text names the
-Pixel 8. It does not say phones in general are supported.
+Evidence: the flash and boot transcript, including `ele-status`. A phone
+that cannot unlock, or a flash that fails for lack of partition space, is
+recorded as a failure for that model and does not count as A2.
 
-**A3. A later low-RAM or older phone.** Starts after A2 has a recorded boot.
-This is the second class, not a second first device.
+**A3. Onboarding kit used for a real device tree.** The kit is
+[device-support.md](device-support.md). This milestone is the first time a
+phone maker or a porter adds a device page and a device tree by following
+it, for any class. Tier 2 or Tier 3 is whatever the evidence supports.
 
-Evidence: a device page whose class is low-end or older, with its own tier.
-Until that page exists, the public status lists Cuttlefish and, once it
-boots, the Pixel 8. The README scope stays the whole market.
+Evidence: `docs/devices/<codename>.md` plus the tree location, written so a
+second person can install it. Until that page exists, the public status
+lists Cuttlefish and the GSI only. The README scope stays the whole market.
 
 ## Track B — Efficiency, per class
 
@@ -106,8 +108,9 @@ before a flagship build exists.
 
 ## Track C — Signed updates, then modular updates
 
-Depends on A2 at Tier 2 for a phone OTA. Packaging can be rehearsed on
-Cuttlefish earlier.
+A system-only package can be rehearsed on Cuttlefish, and on the GSI after
+A2. An OTA for a maintained phone depends on A3, because a GSI does not own
+the vendor image.
 
 **C1. Release keys exist offline.** Public certificates and their
 fingerprints are published. Private keys are not in git. The Cuttlefish
@@ -127,18 +130,18 @@ that does not boot after the update has not met C2. The private key used to
 sign the package was not available to CI. The public fingerprint matches the
 one the owner generated offline.
 
-**C2a. Support window.** The Pixel 8 branch stays maintained while Google
-still ships firmware and security updates for it: seven years from US store
-availability, October 2023 through October 2030, unless Google publishes
-another end date. Each release note says whether the platform source tag
-moved, whether a Pixel firmware binary moved, or whether that month had
-nothing we could build. AOSP source publication in 2026 is Q2 and Q4, so a
-monthly bulletin without a source tag is not labelled as a full platform
-update. After the vendor window, the branch is labelled extended and the
-note lists only the fixes that image contains.
+**C2a. Support window.** Applies when a device has been onboarded. The branch
+stays maintained while that vendor still ships firmware and security updates.
+The device page states the vendor's published end date. Each release note
+says whether the platform source tag moved, whether a vendor firmware binary
+moved, or whether that month had nothing we could build. AOSP source
+publication in 2026 is Q2 and Q4, so a monthly bulletin without a source tag
+is not labelled as a full platform update. After the vendor window, the
+branch is labelled extended and the note lists only the fixes that image
+contains. A GSI release note can move the platform line only.
 
-Evidence: the end date on `docs/devices/shiba.md`, and one release note that
-uses the split above. The page does not exist until A2 starts.
+Evidence: the end date on `docs/devices/<codename>.md`, and one release note
+that uses the split above. The page does not exist until A3 starts.
 
 **C3. One modular update, where the Android version supports APEX.** Ship a
 single signed module update on the ELE-OS channel, or record why this device
@@ -177,11 +180,10 @@ cannot. The baseband is unaffected, and the note says so.
 Evidence: the two app results on Cuttlefish, plus a list of behaviors that
 changed (sync, push, login).
 
-**D3. The same toggle on every maintained class, including low-RAM.** The
-control is part of the product on the Pixel 8 and on the later low-RAM
-image. Measure its cost with the Track B protocol and publish the number.
-A class where the toggle cannot be implemented says so on the device page
-and does not advertise the control.
+**D3. The same toggle on the GSI and on every onboarded class, including
+low-RAM.** Measure its cost with the Track B protocol and publish the
+number. A class where the toggle cannot be implemented says so on the device
+page and does not advertise the control.
 
 **D4. Per-transport firewall.** After D3 has shipped, a Datura-style choice
 of Wi-Fi, mobile data, and VPN can be designed. It is not the first permission
@@ -189,8 +191,8 @@ and it is not required for D2 to count as done.
 
 Hardware memory tagging and other chip features are not a track of their
 own. A Tier 3 device page may add one, with the chip's capability and a test,
-when someone does that work. Pixel 8-class memory tagging is not assumed on
-other flagships.
+when someone does that work. Hardware memory tagging is a property of the
+chip. A flagship without it does not gain it from the ELE-OS image.
 
 ## Track E — Owner recovery
 
@@ -269,7 +271,7 @@ license away from Apache-2.0, stop and pick another open reader before
 shipping it. "The framework has accessibility APIs" does not close F2.
 
 Evidence: the pinned commit, the license file in the build inputs, and a
-recorded session. TalkBack running on a stock Pixel is not this result.
+recorded session. TalkBack running on a stock phone is not this result.
 
 **F3. The same reader on every class, including low-RAM.** No B4 change
 removes the accessibility framework or the TalkBack build from F2. The
@@ -320,10 +322,11 @@ The test uses a fixture contact and a fixture alarm, not a live carrier.
 Evidence: one allowed action and one refused action per category, on
 Cuttlefish.
 
-**H4. Class split.** On the Pixel 8, repeat H1 with the local model and
-record memory beside the Track B protocol. On a low-RAM image, repeat H1
-with a smaller model. If that run is killed or leaves the phone unusable
-under the protocol, the device page says the local model is unavailable.
+**H4. Class split.** On a flagship-class Treble phone running the GSI or an
+onboarded build, repeat H1 with the local model and record memory beside the
+Track B protocol. On a low-RAM phone, repeat H1 with a smaller model. If
+that run is killed or leaves the phone unusable under the protocol, the
+device page says the local model is unavailable.
 Opt-in cloud, if the open cloud policy allows a provider at all, is tested
 only with a provider the owner configured, and the note lists what left the
 device (text, audio, or both).
@@ -362,16 +365,17 @@ when listening is disabled.
 ## Suggested order
 
 1. A1, B1, D1's definition, F1.
-2. In parallel once A1 exists: B2, E2, F2, H1, then A2 on a Pixel 8 whose OEM
-   unlocking toggle works. H2 and H3 follow H1 on Cuttlefish. H4 waits until
-   the Pixel 8 and, later, the low-RAM device can take a measurement. H5
-   waits on the wake-word decision.
-3. A2 then drives B3, C2, C2a, D3, and E4. E4 is in scope for this phone
-   because the hardware can relock. It is still unmet until the evidence
-   exists.
-4. A3, the low-RAM or older phone, after A2 has booted. B4's low-RAM case
-   waits for A3. F3 on a handset waits for that device too.
+2. In parallel once A1 exists: B2, E2, F2, H1, then A2, the GSI, on any
+   Treble phone the tester may wipe. H2 and H3 follow H1 on Cuttlefish. H4
+   waits until a flagship-class boot and a low-RAM boot can take a
+   measurement. H5 waits on the wake-word decision.
+3. A GSI boot drives B3 for that phone and D3 on the GSI. C2, C2a, and E4
+   wait for A3, an onboarded device. E4 is in scope only when that device
+   shows it can relock. It is unmet until the evidence exists.
+4. A low-RAM or older phone is onboarded the same way as any other, whenever
+   a porter brings one. B4's low-RAM case waits for that device. F3 on a
+   handset waits for it too.
 
-The Pixel 8 is the first handset. Swapping it for another model means
-updating the decided entry in [open-questions.md](open-questions.md) with a
-kernel-source URL and a relock check of the same kind.
+No brand is the first handset. Naming one means a new decision in
+[open-questions.md](open-questions.md), with a kernel-source URL and a
+relock check, and it still goes through the onboarding kit.

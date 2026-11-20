@@ -6,34 +6,33 @@ low-end or older phones. The tiers say how much of the architecture we will
 stand behind on that hardware. A newer phone is not automatically a higher
 tier. An older phone is not the only kind of phone we will add.
 
-No handset is supported today. Cuttlefish is the shared target until
-`ele_os_cf_x86_64` has a recorded boot. The first real phone after that is a
-Google Pixel 8 (`shiba`), chosen because it is a recent Pixel with a
-relockable custom verified-boot key, a published kernel branch, and existing
-upstream ports. The details and the reasons other Pixel models were not
-first are in the architecture doc. A low-RAM or older phone is roadmap
-milestone A3, after the Pixel 8 boots.
+ELE-OS has no phone partner and no named first handset. Two images are the
+project's own targets:
+
+- **Cuttlefish** (`ele_os_cf_x86_64`) is the shared development target. The
+  product makefile exists. A boot has not been recorded.
+- **A Treble GSI** is the hardware image, so one system build can boot on
+  many Treble-compliant phones. The product is not in this tree yet. The
+  intended target is `ele_os_gsi_arm64`. It installs the ELE-OS system on top
+  of the vendor image already on the phone. It does not replace that vendor
+  image, the kernel, or the firmware.
 
 Per-device pages will live in `docs/devices/`. That directory has no device
-page yet. See [devices/README.md](devices/README.md).
+page yet. See [devices/README.md](devices/README.md). A page appears when a
+phone maker or a porter finishes the onboarding kit below. A GSI boot on a
+phone is a Tier 1 note for that phone. It does not make the phone a partner
+and it does not make the phone Tier 3.
 
-The Pixel 8 maintained branch lasts while Google ships firmware and security
-updates for it. Google's policy is seven years from first US Google Store
-availability. The Pixel 8 went on sale in October 2023, so that is through
-October 2030 unless Google publishes a different date. Updates in that window
-track vendor binaries and AOSP source when those artifacts exist. They are
-not automatically monthly platform patches: AOSP's 2026 source publication
-is Q2 and Q4. After the vendor window the branch is labelled extended and
-contains only fixes we can still deliver. The same rule applies to every
-later device, using that vendor's end date.
+When a device is later maintained, its branch lasts while that vendor ships
+firmware and security updates. The end date is the vendor's published date,
+written on the device page. Updates in that window track vendor binaries and
+AOSP source when those artifacts exist. They are not automatically monthly
+platform patches: AOSP's 2026 source publication is Q2 and Q4. After the
+vendor window the branch is labelled extended and contains only fixes we can
+still deliver. The GSI has no vendor window of its own.
 
-AOSP's Pixel kernel guide shows `fastboot oem disable-verification` before
-flashing a one-off custom kernel onto a stock platform image. That is a
-development shortcut. The ELE-OS install for `shiba` is a full image signed
-by the owner's release key, the public key written to `avb_custom_key`, and
-the bootloader locked again. Unlocking wipes user data. A unit whose OEM
-unlocking toggle cannot be switched on, which includes some carrier-sold
-Pixels, is out of scope.
+Unlocking a compliant bootloader wipes user data. A unit whose OEM unlocking
+toggle cannot be switched on is out of scope, whoever sold it.
 
 Tiers are defined in the [architecture](architecture.md#device-classes-and-support-tiers).
 Short form:
@@ -85,15 +84,17 @@ boots in permissive mode stays at Tier 1 until that is fixed.
 
 [Project Treble](https://source.android.com/docs/core/architecture) and the
 [Generic System Image](https://source.android.com/docs/core/tests/vts/gsi)
-are bring-up tools.
+are how ELE-OS reaches many phones without a partner.
 
 - Devices that launched with Android 8 or later were supposed to separate
   vendor code from the framework. In practice the vendor interface is often
-  incomplete. A GSI boot is evidence about Treble, not an acceptance test.
-- AOSP's GSI documentation treats the GSI as the system image for VTS and
-  CTS-on-GSI. It is not a maintained ELE-OS product. The vendor partition,
-  kernel, and radio firmware stay at the versions already on the phone, so
-  the update pillar is unmet for those partitions.
+  incomplete. A GSI boot is Tier 1 evidence for that phone. It is not a
+  maintained-device acceptance test.
+- AOSP's GSI documentation treats the upstream GSI as the system image for
+  VTS and CTS-on-GSI. ELE-OS's GSI is our system image for Treble phones.
+  The vendor partition, kernel, and radio firmware stay at the versions
+  already on the phone, so the update pillar for those partitions is unmet
+  until a porter builds them through the kit.
 - Android 9 and later GSI assumptions (system-as-root, mandatory VNDK,
   64-bit binder) exclude a lot of older phones. Those phones can still be
   Tier 2 with a dedicated device tree and an older Android branch. They are
@@ -153,8 +154,9 @@ run.
    answered. Tag it as a device proposal.
 3. Do not flash anything until the unlock warning (data wipe) is in the
    issue, and do not flash a phone you do not have permission to wipe.
-4. Optional: GSI smoke test. Put the log in the issue. A boot is Tier 1
-   evidence only.
+4. Boot the ELE-OS GSI if the phone is Treble-compliant, and put the log in
+   the issue. A boot is Tier 1 evidence only. Phones that are not
+   Treble-compliant skip this step and say why.
 5. Device tree and kernel live in their own git repositories, intended to be
    checked out at `device/ele/<codename>` and the kernel path that tree
    names. They are not folders in this overlay. This repository stays
@@ -172,13 +174,9 @@ run.
    the evidence next to it. A maintainer's word without the log does not
    promote the device.
 
-The first port is the Pixel 8. The second port is a low-RAM or older phone
-([A3](roadmap.md)), so the status page cannot be read as "flagships only" or
-"old phones only" once both exist. A3 does not block the Pixel 8 work.
-Another flagship proposed before A3 needs a reason that `shiba` does not
-already cover. Same-class variants such as the Pixel 8 Pro (`husky`) share
-the `shusky` kernel branch and can follow `shiba` without becoming the
-second class.
+There is no first brand. A flagship, a mid-range phone, and a low-RAM or
+older phone are all onboarded the same way. The public status lists a phone
+only after its page exists. A GSI boot log is not that page.
 
 ## Maintained-device checklist
 
