@@ -14,3 +14,4 @@ mkdir "$tmp/fixture"
 sh tests/status.sh
 sh tests/ota.sh
 sh tests/ota_client.sh
+sh tests/ota_note.sh

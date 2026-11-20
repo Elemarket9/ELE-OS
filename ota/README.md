@@ -54,6 +54,10 @@ c++ -std=c++17 -Wall -Wextra -Werror -Iota ota/metadata.cpp ota/client.cpp ota/c
 
 The client accepts the pinned test public key only. It does not open a network connection. `sh tests/ota_client.sh` covers a newer package, a downgrade, a bad signature, a payload byte change, an ambiguous version, and both targets.
 
+## Monthly notes
+
+[branch-model.md](branch-model.md) describes the maintained and extended labels for Cuttlefish and `ele_os_gsi_arm64`. `ele-ota-note` checks one note file. It requires `built=no`, `firmware=not-claimed`, and `bulletin-is-platform-update=no`. It does not publish the file. `sh tests/ota_note.sh` runs those checks.
+
 `m libele_ota` has not been run. The Soong module is `libele_ota` in `ota/Android.bp`.
 
 Package bytes are described in [format.md](format.md). The key is described in [keys/test/README.md](keys/test/README.md).

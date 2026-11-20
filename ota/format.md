@@ -70,3 +70,7 @@ version-code=<version or ->
 ```
 
 `verified-not-installed` means the newest matching package verified with the test key and its payload hash matched. The client stops there. `no-update` means nothing newer verified. `rejected` means a matching package failed verification, a package directory was unreadable, or two packages shared the winning version. A rejected newest package is not replaced by an older one.
+
+## Monthly note
+
+A note is a separate text file, `ELE-OS-UPDATE-NOTE/1`, described in [branch-model.md](branch-model.md). It records whether a month named an AOSP release tag, left the tag unchanged, shipped nothing, or listed fixes on an extended branch. `built=no` and `firmware=not-claimed` are required. The note is not a package and it is not published to a server.

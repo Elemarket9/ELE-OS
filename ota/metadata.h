@@ -45,6 +45,8 @@ inline bool TargetProduct(const std::string& target, std::string& product) {
     return false;
 }
 
+bool AospReleaseTagValue(const std::string& text);
+
 std::string Canonical(const Metadata& metadata);
 bool Validate(const Metadata& metadata, std::string& error);
 bool Parse(const std::string& raw, Metadata& out, std::string& error);

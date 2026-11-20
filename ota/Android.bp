@@ -3,6 +3,7 @@ cc_library_static {
     srcs: [
         "metadata.cpp",
         "client.cpp",
+        "note.cpp",
     ],
     cpp_std: "c++17",
     export_include_dirs: ["."],

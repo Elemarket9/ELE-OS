@@ -203,6 +203,8 @@ bool LoadPublicPem(const std::string& path, std::array<uint8_t, 32>& out, std::s
 
 }  // namespace
 
+bool AospReleaseTagValue(const std::string& text) { return IsAospReleaseTag(text); }
+
 std::string HexEncode(const uint8_t* data, size_t size) {
     static constexpr char kDigits[] = "0123456789abcdef";
     std::string text(size * 2, '\0');
