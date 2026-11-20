@@ -177,6 +177,10 @@ per-transport firewall is a later control, not this one.
 An app that is allowed network can open a socket. An app that is denied
 cannot. The baseband is unaffected, and the note says so.
 
+The tree has a prototype screen and a host-tested choice (`network/`),
+installed on the Cuttlefish and GSI makefiles. D2 stays open until a
+Cuttlefish run records the two app results below.
+
 Evidence: the two app results on Cuttlefish, plus a list of behaviors that
 changed (sync, push, login).
 

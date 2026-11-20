@@ -26,7 +26,7 @@ settings from a pull request.
 phone. There is no phone partner. Cuttlefish (`ele_os_cf_x86_64`) is the
 shared development target until a boot is recorded, and it stays the place
 shared components are proven. The hardware image is a Treble GSI
-(`ele_os_gsi_arm64`, not in the tree yet) so one system build can boot on
+(`ele_os_gsi_arm64`, makefile registered, not built) so one system build can boot on
 many Treble-compliant phones. A phone maker or a porter adds a specific
 device later by following the onboarding kit in
 [device-support.md](device-support.md).
@@ -92,8 +92,10 @@ is built. The per-transport firewall (CalyxOS Datura's model) comes later.
 
 **Why.** One switch is the smallest control an owner can understand. It
 reuses the `INTERNET` permission apps already declare. A transport matrix is
-more UI and more policy for a first version. The toggle does not exist in
-the tree yet, and it does not constrain the baseband. We reimplement the
+more UI and more policy for a first version. The prototype in `network/`
+stores the choice and shows the switch. A denial is defined as the network
+being down. It does not constrain the baseband. A Cuttlefish run has not
+shown that sockets are blocked. We reimplement the
 behavior. We do not vendor GrapheneOS code for this milestone.
 
 ### 6. Screen reader

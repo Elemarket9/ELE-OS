@@ -45,9 +45,9 @@ source.
 
 ELE-OS has no phone partner and does not pick a first handset. The hardware
 image is a Treble GSI, so the same system image can boot on many
-Treble-compliant phones. That product is not registered in this tree yet.
-The intended lunch target is `ele_os_gsi_arm64`, built from the AOSP generic
-system image plus the ELE-OS packages. `arm` is added only if a porter shows
+Treble-compliant phones. The lunch target `ele_os_gsi_arm64` is registered.
+It has not been built or booted. It is the AOSP generic system image plus
+the ELE-OS network permission package. `arm` is added only if a porter shows
 a device that needs it.
 
 A phone maker or a porter who wants a maintained device, vendor updates, or
@@ -65,18 +65,22 @@ advance.
 
 ## Repository and system components
 
-This repository is the overlay at `device/ele/os`. It registers one virtual
-product:
+This repository is the overlay at `device/ele/os`. It registers two products:
 
 - `AndroidProducts.mk` registers `ele_os_cf_build.mk`, which inherits
-  `ele_os_cf_x86_64.mk`. The lunch target is
-  `ele_os_cf_x86_64-aosp_current-userdebug`. `android-16.0.0_r1` has no
+  `ele_os_cf_x86_64.mk`, and `ele_os_gsi_arm64.mk`. The Cuttlefish lunch
+  target is `ele_os_cf_x86_64-aosp_current-userdebug`. The GSI lunch target
+  is `ele_os_gsi_arm64-aosp_current-userdebug`. `android-16.0.0_r1` has no
   `trunk_staging` release config; `aosp_current` is the alias that tag maps
   to `bp2a`. `lunch` has not been run.
 - `ele_os_cf_x86_64.mk` inherits
   `device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk` and adds
-  `ele-status` to the default image. `ElePeripherals` stays in the tree and
-  is not installed unless a local build adds it.
+  `ele-status` and the shared network permission package to the default
+  image. `ElePeripherals` stays in the tree and is not installed unless a
+  local build adds it.
+- `ele_os_gsi_arm64.mk` inherits the AOSP generic system image and
+  `gsi_release.mk`, and the same network permission package. The makefile
+  has not been built.
 - The image, when someone builds it, is signed with AOSP's public test-keys.
   Those keys are published in the AOSP tree. They are acceptable for a
   virtual development build and unacceptable for a phone offered to anyone
@@ -125,6 +129,18 @@ have to create a default IP route. None of this has been validated on
 hardware. It is outside the core roadmap and is not in `PRODUCT_PACKAGES`.
 A developer who wants it in a local image adds `ElePeripherals` themselves.
 
+**Network access** (`network/`) is the per-app on/off control. It is granted
+by default. A denial means that app should observe the network as down
+(`ENETUNREACH`), and the saved file has no Wi-Fi, mobile-data, or VPN
+column. The cellular baseband is outside the control. `EleNetwork` is the
+launcher screen. It writes the choice to the app-private file
+`network-policy.txt`. The same package is on the Cuttlefish product and on
+`ele_os_gsi_arm64`. Host tests cover the choice and which apps get a
+switch. They do not compile the Android screen, open a socket, or boot an
+image. No Cuttlefish or GSI run has shown that a denied app fails to
+connect, so this is a prototype of the decision and the screen. The
+per-transport firewall is still later.
+
 ### Planned components
 
 These names describe jobs. They are not packages in the tree.
@@ -137,7 +153,7 @@ These names describe jobs. They are not packages in the tree.
 | Owner record | Device id plus owner Ed25519 public key, stored so a userdata wipe does not delete it | Only on devices that have such storage and a bootloader that will not casually erase it. |
 | Reactivation gate | Setup refuses to continue until a fresh owner proof is consumed | Requires the record and a setup path we control. userdebug `adb root` bypasses a careless gate. |
 | Recovery command channel | Signed locate, lock, and wipe messages | Optional, off until the phone's owner enables it. Needs a network path that owner chose. |
-| Network toggle | One per-app on/off control for IP networking | Decided, not built. Userspace on any device running our system image, including low-RAM. Does not constrain the baseband. Per-transport firewall is later. |
+| Per-transport firewall | Separate Wi-Fi, mobile data, and VPN switches | Later. The on/off control above is the first permission. |
 | TalkBack | Screen reader on every class, including low-RAM | Decided: build [google/talkback](https://github.com/google/talkback), Apache-2.0. Not yet in the image. A plain AOSP lunch target does not include it. |
 
 ## Update pipeline and signing
