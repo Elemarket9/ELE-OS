@@ -12,3 +12,8 @@ cxx=${CXX:-c++}
 mkdir "$tmp/fixture"
 "$tmp/session" "$tmp/fixture"
 sh tests/status.sh
+if [ -n "${ANDROID_HOME:-}" ]; then
+    sh tests/peripherals-sdk.sh "$tmp/apk"
+else
+    echo 'ANDROID_HOME unset: skipped External devices SDK build check'
+fi
