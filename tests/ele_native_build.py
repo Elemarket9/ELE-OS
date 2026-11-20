@@ -29,6 +29,13 @@ class NativeTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 b.verify_config(good + "\nCONFIG_ELE_PRESSURE=m", arch)
 
+    def test_release_marks_local_overlay_dirty(self):
+        b.verify_release(b.PIN["version"] + b.PIN["localversion"] + "-dirty")
+        for release in (b.PIN["version"] + b.PIN["localversion"],
+                        b.PIN["version"] + "-other-dirty"):
+            with self.assertRaisesRegex(ValueError, "unexpected kernel release"):
+                b.verify_release(release)
+
     def test_integrate(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
