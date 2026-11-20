@@ -75,8 +75,12 @@ phone numbers, and email addresses.
 grow a mode that claims attestation or patch completeness.
 
 UI work uses resource strings, start/end layout, and font scale. The
-External devices app is experimental. It is not a pillar, and strings in the
-activity source are technical debt, not a pattern to copy.
+External devices app is an optional experiment. It is not in the default
+image and not on the core roadmap. Do not add `ElePeripherals` back to
+`PRODUCT_PACKAGES` as a drive-by. Strings in that activity are technical
+debt, not a pattern to copy. Product UI ships TalkBack built from
+`google/talkback` (Apache-2.0) once that milestone is done. Do not drop it
+from a low-RAM product to save space.
 
 ## Device proposals
 

@@ -7,9 +7,10 @@ The aim is to be better than stock Android and iOS at specific jobs an owner
 can name. It is not a claim to beat either system overall, and it does not
 run on Apple hardware.
 
-The GitHub description still says "affordable phones." The scope in this
-document is the whole market. Widening that description is an open decision
-in [docs/open-questions.md](docs/open-questions.md).
+The description to set on the GitHub repository, which the owner applies in
+the repository settings, is:
+
+> Open-source Android-based mobile OS for every phone class: efficient, long-term signed updates, privacy and owner-controlled lost-device recovery.
 
 ## Why
 
@@ -54,11 +55,12 @@ performance numbers.
 
 Signed over-the-air updates, verified boot where the bootloader can enforce
 it, and hardening in the spirit of [GrapheneOS](https://grapheneos.org/features)
-on hardware that has the necessary pieces. "Long-term" means we keep shipping
-the platform patches we can actually build after the vendor's window closes.
-It does not mean we can patch radio firmware the vendor never released. A
-phone the vendor still supports may receive firmware from that vendor sooner
-than an ELE-OS build can.
+on hardware that has the necessary pieces. A device stays on a maintained
+branch while its vendor still ships firmware and security updates, tracking
+those releases as often as the published source and vendor binaries allow.
+After that, a branch labelled extended carries only the fixes we can still
+build. The repository owner holds the OS release keys offline. Development
+images and CI stay on AOSP's public test-keys.
 
 ### Privacy and owner control
 
@@ -94,9 +96,12 @@ These are in scope because they help on a flagship and on an old phone. None
 of them is an ELE-OS feature beyond what upstream AOSP already provides. The
 architecture doc states what is feasible on which hardware.
 
-- **Permission model.** AOSP already has runtime permissions. Further
-  per-app controls (network, sensors) have working precedents in GrapheneOS
-  and in CalyxOS's Datura firewall. They are not in this tree.
+- **Permission model.** AOSP already has runtime permissions. The first
+  control ELE-OS will add is a per-app Network on/off toggle, the same idea
+  as [GrapheneOS's network permission](https://grapheneos.org/features):
+  one switch, granted by default so apps keep working, and a denial the app
+  sees as the network being down. A per-transport firewall comes later. The
+  toggle is not built yet, and it does not constrain the cellular baseband.
 - **App sandbox.** Each Android app already runs in AOSP's UID, SELinux, and
   seccomp sandbox. ELE-OS's near-term job is to avoid weakening that sandbox.
   Hardware memory tagging and similar defenses exist only on chips that
@@ -107,9 +112,12 @@ architecture doc states what is feasible on which hardware.
   documents that Mainline support for Android 11 and lower concluded in Q4
   2025.
 - **Accessibility.** Font scale, contrast, right-to-left layout, and a
-  working screen reader are part of shipping a phone people can actually use.
-  A smaller system image is not a reason to remove them. No screen reader is
-  integrated or tested in ELE-OS yet.
+  screen reader ship on every class, including low-RAM images. The reader is
+  an ELE-OS build of [TalkBack](https://github.com/google/talkback) from
+  Google's Apache-2.0 source, pinned to a commit, with Google's copyright
+  and license kept. It is not the Play Store package, and it is not built
+  into this tree yet. Public TalkBack source is updated in batches and can
+  lag the Play Store build.
 
 ## What this repository contains today
 
@@ -118,14 +126,15 @@ This git repository is a device overlay. In an AOSP tree it is checked out at
 
 | Piece | State |
 | --- | --- |
-| Cuttlefish product `ele_os_cf_x86_64` | Makefile registered. Image not built or booted in this repository. Signed with upstream public test-keys (development keys). |
-| `ele-status` | Local shell snapshot of product name, fingerprint, two patch dates, verified-boot properties, and a memory reading. Not attestation and not proof that patches are complete. |
+| Cuttlefish product `ele_os_cf_x86_64` | Shared development target until it actually boots. Makefile registered. Image not built or booted in this repository. Signed with upstream public test-keys. |
+| First handset | Decided, not ported: a carrier-unlockable Google Pixel 8 (`shiba`). Tier 3 is the goal. No Pixel image exists yet. |
+| `ele-status` | In the default image. Local shell snapshot of product name, fingerprint, two patch dates, verified-boot properties, and a memory reading. Not attestation and not proof that patches are complete. |
 | `libele_owner_proof` | Ed25519 check and a one-time challenge session. Host tests only. No device enforces it. |
-| External devices app | Experimental Camera2 preview of external cameras, and a line of text about whether the default network reports a satellite transport. Not a product pillar. Not validated on hardware. |
+| External devices app | Optional experiment in the tree. Camera2 preview of external cameras, and a line about whether the default network reports a satellite transport. Not in the default image, not on the core roadmap, not validated on hardware. |
 
-Lost-device recovery, OTA delivery, a permission toggle, a screen reader, and
-every physical handset are future work. The roadmap says how each of those
-is measured before anyone calls it done.
+Lost-device recovery, OTA delivery, the network toggle, TalkBack, and the
+Pixel 8 port are future work. The roadmap says how each is measured before
+anyone calls it done.
 
 ## Documents
 
@@ -137,8 +146,8 @@ is measured before anyone calls it done.
   device
 - [Build machines](docs/build.md) — host tests versus a full AOSP build
 - [Contributing](CONTRIBUTING.md)
-- [Open questions](docs/open-questions.md) — decisions the maintainer still
-  needs to make
+- [Open questions](docs/open-questions.md) — decisions already made, and the
+  ones still open
 - [Evidence log](docs/evidence/README.md) — measured results only; empty of
   device results today
 

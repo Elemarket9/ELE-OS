@@ -1,138 +1,193 @@
-# Open questions
+# Decisions and open questions
 
-Decisions the maintainer still has to make. Each one has a working
-assumption so contributors do not block on silence. The assumption is not a
-locked vote. Override it in a commit that updates this file.
+The scope is not open. ELE-OS is for current flagships, mid-range phones,
+low-end phones, and older devices. Old and low-end revival is one pillar.
 
-The scope itself is not open. ELE-OS is for current flagships, mid-range
-phones, low-end phones, and older devices. Old and low-end revival is one
-pillar.
+The seven questions the owner asked us to close are decided below. The
+reasoning stays so a later change has to say what fact changed. Items after
+that are still open. A working assumption is not a locked vote.
 
-## 1. GitHub description
+## Decided
 
-The repository description still says "affordable phones." The README now
-says the wider market.
+### 1. GitHub description
 
-Working assumption: leave the GitHub string until the maintainer edits it.
-Suggested replacement, when they want one: "Open-source mobile OS research
-for phones across the market, focused on efficiency, signed updates, privacy
-and owner control, and owner-controlled lost-device recovery."
+**Decision.** Widen it. The owner sets this text in the repository settings:
 
-## 2. Which phone is first
+> Open-source Android-based mobile OS for every phone class: efficient, long-term signed updates, privacy and owner-controlled lost-device recovery.
 
-Working assumption: the first handset is whichever phone a maintainer has,
-can unlock, and can get kernel source for. Record its class. Do not describe
-that one phone as coverage of the market. A Tier 3 flagship is a valid first
-device. A 3 GB phone after vendor support is a valid first device.
+**Why.** The old description said "affordable phones," which hid flagships
+and mid-range devices. This sentence names the market and the four jobs
+without claiming a win over Android or iOS overall. We do not change GitHub
+settings from a pull request.
 
-## 3. When a second class is required
+### 2. First device
 
-Working assumption: the status page lists only classes that have an evidence
-note. A second class is roadmap milestone A3. It does not block the first
-boot, and it does block any sentence that says we already serve the whole
-range in practice.
+**Decision.** Cuttlefish (`ele_os_cf_x86_64`) stays the shared target until a
+boot is recorded. The first real phone is a Google Pixel 8, codename `shiba`,
+aimed at Tier 3. A low-RAM or older phone is a later milestone (roadmap A3),
+after that Pixel has booted.
 
-## 4. Android version pin
+**Why this model.** It has to be a recent Pixel with a relockable verified
+boot, a user-set custom key, published kernel source, and strong upstream
+support. AOSP's Pixel kernel guide (updated 2026-07-13) lists `shiba` and the
+Pixel 8 Pro (`husky`) on `android-gs-shusky-6.1-android16`. Pixels enroll a
+custom key with `avb_custom_key`. GrapheneOS and CalyxOS already relock
+production builds on `shiba`. Pixel 8 and later have hardware memory tagging.
+Google's update policy is seven years from first US store availability;
+the Pixel 8 went on sale in October 2023, so the vendor window runs through
+October 2030.
+
+**Why not the neighbours.** The Pixel 8 Pro shares that kernel and adds
+camera hardware the first port does not need. The Pixel 8a has its own kernel
+branch and a later vendor end date (May 2031 on CalyxOS's table), with less
+accumulated port history than `shiba`. Pixel 9 and later have longer
+remaining vendor support and can be later targets. That same kernel guide
+stops at the Pixel 9a and does not list a Pixel 10 or Pixel 11 branch, so
+those models are not the first port until their source URL is checked the
+same way. A carrier unit whose OEM unlocking switch cannot be enabled cannot
+be the unit we use.
+
+`shiba` is not supported yet. There is no device tree and no boot log.
+
+### 3. Release keys
+
+**Decision.** The repository owner holds the OS release keys. They are
+generated on an offline machine or a hardware token, when the first release
+build is actually prepared. An encrypted backup of the private bundle is
+stored in a separate physical location. The passphrase is stored apart from
+that ciphertext, with a sealed copy for one named successor. The successor
+may sign an already-built update or publish a retirement note with the
+public fingerprint. CI, GitHub Actions, and this repository never receive
+production private keys. Development and CI images use AOSP test-keys only.
+
+**Why.** One holder is simpler than a committee that has not been named.
+Offline generation plus a second physical copy covers loss of the laptop
+without putting the keys where a CI log can leak them. Naming the successor
+in a private paper record, not in git, covers the owner being unavailable
+without inventing a third party who can unlock phones. If both the owner and
+the successor are unreachable, updates stop. Replacing the AVB key on a
+locked phone requires unlocking, which wipes user data. The phone owner's
+Ed25519 recovery key is a different key and stays with the phone's owner.
+
+The steps are written in the architecture doc. No keys have been generated.
+
+### 4. Support length
+
+**Decision.** Each device stays on a maintained branch while its vendor
+ships firmware and security updates. The branch tracks those releases as
+often as we can build them. After the vendor stops, the branch is labelled
+extended and contains only the fixes we can actually deliver.
+
+**What "monthly where possible" can mean.** Pixel firmware drops have
+historically been monthly, and we take a drop when Google publishes a binary
+we can install. Platform source is a different schedule. AOSP's 2026
+documentation says source is published in Q2 and Q4. A monthly security
+bulletin without a published source tag is not a monthly platform update.
+Release notes say which of platform source, vendor binary, or neither moved.
+For the Pixel 8 the maintained window is October 2023 through October 2030
+under Google's seven-year policy, unless Google publishes another end date.
+
+### 5. First extra permission
+
+**Decision.** A per-app Network on/off toggle, in the spirit of GrapheneOS's
+network permission. Granted by default. Denial looks to the app like the
+network is down. It ships on every class, including low-RAM images, once it
+is built. The per-transport firewall (CalyxOS Datura's model) comes later.
+
+**Why.** One switch is the smallest control an owner can understand. It
+reuses the `INTERNET` permission apps already declare. A transport matrix is
+more UI and more policy for a first version. The toggle does not exist in
+the tree yet, and it does not constrain the baseband. We reimplement the
+behavior. We do not vendor GrapheneOS code for this milestone.
+
+### 6. Screen reader
+
+**Decision.** Ship a build of TalkBack from
+[google/talkback](https://github.com/google/talkback) on every class,
+including low-RAM images.
+
+**License check.** That repository's `LICENSE` is the Apache License 2.0,
+the same license as this tree. The GitHub project describes itself as the
+open-source incarnation of TalkBack. Source is published in batches. At the
+time of this decision the latest push on the default branch was 2026-03-23,
+while newer builds have shipped on Play as Android Accessibility Suite. We
+pin a commit, keep upstream's license and copyright, and build the APK. We
+do not ship the Play binary. If a later drop is no longer Apache-2.0, we
+stop and choose another open reader before installing it. TalkBack is not in
+the image yet. A low-RAM image that cannot boot with it is not offered until
+that conflict is fixed.
+
+### 7. External devices app
+
+**Decision.** Keep `peripherals/` as an optional experiment. It is outside
+the core roadmap and not in the default image. `PRODUCT_PACKAGES` installs
+`ele-status` only. A local build can add `ElePeripherals`.
+
+**Why.** The camera preview and the satellite-transport line are useful
+experiments and are not pillars. Leaving the sources in the tree keeps the
+work. Installing the app on every phone would make an unvalidated experiment
+look like a feature.
+
+## Still open
+
+### Android version pin
 
 The instructions pin `android-16.0.0_r1`. AOSP's current documentation says
 source is published in Q2 and Q4 and that `android-latest-release` tracks the
 newest drop.
 
 Working assumption: do not move the pin until a Cuttlefish boot is recorded
-on the current tag. Handset trees then use the newest AOSP release that
-device's vendor code can boot, which may be older than the Cuttlefish pin.
-Moving the virtual product to `android-latest-release` is a separate change
-because the branch moves underneath comparisons.
+on the current tag. The Pixel 8 tree then uses the newest AOSP release that
+device's vendor code can boot. Moving the virtual product to
+`android-latest-release` is a separate change because the branch moves
+underneath comparisons.
 
-## 5. Starting a handset tree from LineageOS
+### Starting the Pixel tree from an existing port
 
-Working assumption: reuse an existing device tree when the license allows,
-build it against the AOSP tag we can boot, and do not import LineageOS
-release keys, their updater, or a policy we have not adopted (their charter
-requires userdebug and disables system verity on those builds).
+Working assumption: reuse an existing AOSP or LineageOS device tree for
+`shiba` when the license allows, build it against the AOSP tag we can boot,
+and do not import that project's release keys, updater, or policies we have
+not adopted. LineageOS's charter requires userdebug and disables system
+verity on those builds. Tier 3 images for ELE-OS are user builds.
 
-## 6. Google software and app compatibility
+### Google software and app compatibility
 
 Working assumption: the system image contains no Google Mobile Services, no
 microG, and no sandboxed Play. Apps that need those stacks will fail or lose
-push. Revisit when a named set of apps fails and the maintainer accepts the
+push. Revisit when a named set of apps fails and the owner accepts the
 security cost of signature spoofing (microG) or of shipping Play in a
-sandbox (the GrapheneOS approach). That revisit is per the compatibility
-goal, not a quiet default.
+sandbox (the GrapheneOS approach).
 
-## 7. First extra permission control
-
-Working assumption: design a per-app network control in the spirit of
-GrapheneOS's network permission, granted by default so install compatibility
-holds, with the denial mode documented. CalyxOS Datura's per-transport
-toggles are the alternative if the maintainer would rather have a firewall
-UI. Neither control exists in the tree. The baseband stays out of reach of
-both.
-
-## 8. Screen reader
-
-Working assumption: every class of device we call a daily driver ships a
-screen reader, including the low-RAM image. Which open component that is has
-not been chosen. Removing it to save memory is not an option; if the low-RAM
-image cannot boot with it, that image is not offered as maintained.
-
-## 9. Modular updates in the first release
+### Modular updates in the first release
 
 Working assumption: the first update a device gets is a full signed OTA.
 An APEX or Mainline-style module update is a follow-on, and only on Android
-versions that can install one. Pre-Treble phones and, in practice, many
-post-support phones stay on full OTAs. Google's own Mainline stream for
-Android 11 and lower ended in Q4 2025.
+versions that can install one. Google's Mainline stream for Android 11 and
+lower ended in Q4 2025.
 
-## 10. Recovery transport
+### Recovery transport
 
-Working assumption: the owner configures the endpoint, including a
+Working assumption: the phone's owner configures the endpoint, including a
 self-hosted one. ELE-OS does not run a location server. Lost mode is off
-until the owner turns it on. The owner key never leaves the owner.
+until that owner turns it on. The owner recovery key never leaves them.
 
-## 11. Lost owner key
+### Lost owner recovery key
 
-Working assumption: the owner key is not the daily PIN. Losing the key
-blocks post-wipe reactivation and remote commands, and does not lock a phone
-the owner can still unlock locally. There is no project escrow. Strict
-theft lock is opt-in at enrollment, with that warning on the screen. Phones
-can ship with the recovery features unused.
+Working assumption: the recovery key is not the daily PIN. Losing it blocks
+post-wipe reactivation and remote commands, and does not lock a phone the
+owner can still unlock locally. There is no project escrow. Strict theft
+lock is opt-in at enrollment, with that warning on the screen.
 
-## 12. Who holds the OS release keys
-
-Not decided. Working assumption: nobody generates them until track C starts,
-they are generated offline, and the public fingerprint is committed without
-the private key. A single-maintainer project should say what happens to the
-keys if that person is unavailable. That operational answer is still open.
-
-## 13. How long updates last
-
-Not decided. The constraint is technical: platform patches follow the AOSP
-source Google publishes (Q2 and Q4 in the 2026 docs), vendor and firmware
-patches follow what we can rebuild or what the vendor still signs, and a
-device branch can be declared done. Working assumption: each device page
-states the branch and the date of the last build we actually shipped, and
-we do not print a multi-year promise until at least one OTA has landed.
-
-## 14. External devices app
-
-The Camera2 external-camera preview and the satellite-transport line are in
-the tree and are not pillars.
-
-Working assumption: they stay experimental. They can be removed or split out
-if they start blocking the product. They are not a commitment to satellite
-messaging or to a particular camera.
-
-## 15. userdebug versus user
+### userdebug versus user
 
 LineageOS ships official builds as userdebug. A theft lock and a setup gate
 do not hold on a build where `adb root` works.
 
-Working assumption: userdebug for development and for Tier 1. A user build
-is required before a device is described as a daily driver with a lock, and
-before Tier 3.
+Working assumption: userdebug for Cuttlefish development and for Tier 1. A
+user build is required before the Pixel 8 is described as a daily driver
+with a lock, and before Tier 3.
 
-## 16. Reproducible builds
+### Reproducible builds
 
 Not a milestone. AOSP images are difficult to reproduce bit for bit.
 Working assumption: publish the manifest tag, the ELE-OS git revision, and

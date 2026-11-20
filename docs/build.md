@@ -134,12 +134,14 @@ migration, not a local edit to hide.
 
 ### Keys
 
-Do not generate release keys on a shared builder and do not put them in this
-repository. The Cuttlefish product is a test-key image until an evidence note
-says a specific handset image was signed with a published release key.
-Signing steps, when a release exists, are AOSP's
+The repository owner generates production release keys on an offline machine
+or hardware token, keeps an encrypted backup in a separate physical place,
+and follows the succession steps in the architecture doc. CI never sees
+those private keys. This Cuttlefish product stays a test-key image until an
+evidence note says a specific handset image was signed with the published
+release key. Signing steps, when a release exists, are AOSP's
 [sign_target_files_apks](https://source.android.com/docs/core/ota/sign_builds)
-flow, described in the architecture doc.
+flow.
 
 ### What this overlay does not build by itself
 

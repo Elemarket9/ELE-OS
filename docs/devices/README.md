@@ -1,6 +1,7 @@
 # Device pages
 
-No handset has a page here.
+No handset has a page here. The first page, when the port starts, will be
+`shiba.md` for the Pixel 8. It is not supported yet.
 
 When a device is proposed, add `docs/devices/<codename>.md` using the record
 and the checklist in [device support](../device-support.md). The page states

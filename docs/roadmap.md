@@ -11,9 +11,10 @@ There are no calendar dates. There are no target percentages, frame rates, or
 RAM savings. A measurement that shows no improvement, or a regression, closes
 the measurement milestone and sends the change back.
 
-The virtual device comes first because it is the only product registered in
-the tree. That sequencing is a build constraint. It is not a statement that
-Cuttlefish is the user, or that the first handset must be an old phone.
+Cuttlefish stays the shared target until `ele_os_cf_x86_64` boots. The first
+real phone after that is a Pixel 8 (`shiba`). A low-RAM or older phone is a
+later milestone. That order is a bring-up decision. The project scope stays
+the whole market.
 
 ## How a milestone is recorded
 
@@ -31,7 +32,8 @@ host with g++ 13 and OpenSSL 3.0.13. The pass covers the host fixtures only.
 ## Track A — Boot something we can name
 
 **A0. Foundation, now.** The overlay, the host-side owner proof, `ele-status`,
-the experimental peripherals app, and these documents.
+and these documents. The External devices app is in the tree and out of the
+default image. It is not a milestone.
 
 Evidence: `CXX=g++ sh tests/run.sh` passes on a documented host. The lunch
 target is registered. No image boot is claimed.
@@ -46,28 +48,24 @@ image is identified in the note so later comparisons have a baseline.
 Evidence: the command transcript. A failed build is recorded as a failure,
 with the missing host feature (KVM, RAM, disk), and does not count.
 
-**A2. First handset, any class.** A maintainer with the device in hand
-follows [device-support.md](device-support.md). The device page records class
-and tier. Tier 1 is a boot with a broken-hardware list. Tier 2 adds the
-maintained-device checklist (calls, mobile data, Wi-Fi, audio, display,
-camera, app install, encryption), each marked pass or fail.
+**A2. First handset: Pixel 8 (`shiba`).** Starts only after A1. The unit must
+be one on which OEM unlocking can be turned on. The device page records class
+(current flagship) and the tier the evidence supports. The aim is Tier 3.
+Until relock, a custom AVB key, and the theft-lock checks pass, the page
+stays at Tier 1 or Tier 2. Tier 1 is a boot with a broken-hardware list.
+Tier 2 adds the maintained-device checklist (calls, mobile data, Wi-Fi,
+audio, display, camera, app install, encryption), each marked pass or fail.
 
 Evidence: a second person can install from the written steps, or the note
-says they have not and the device stays Tier 1. The status text names this
-device's class only. It does not say "phones" in general are supported.
+says they have not and the device stays Tier 1. The status text names the
+Pixel 8. It does not say phones in general are supported.
 
-**A3. A second class.** A flagship or mid-range boot if A2 was a low-RAM
-phone, or a low-RAM boot if A2 was a recent phone.
+**A3. A later low-RAM or older phone.** Starts after A2 has a recorded boot.
+This is the second class, not a second first device.
 
-Evidence: two device pages whose classes differ, each with its own tier.
-Until this exists, the public status lists only the classes that have a
-page. The project scope in the README stays the whole market; the evidence
-section stays narrower than the scope. That split is deliberate.
-
-A2 and A3 are not blocked on each other beyond "someone has the hardware."
-A Tier 3 candidate (a phone that can relock with a user-set verified-boot
-key) may be the first handset. Old hardware is not a prerequisite for new
-hardware, or the reverse.
+Evidence: a device page whose class is low-end or older, with its own tier.
+Until that page exists, the public status lists Cuttlefish and, once it
+boots, the Pixel 8. The README scope stays the whole market.
 
 ## Track B — Efficiency, per class
 
@@ -125,7 +123,22 @@ non-A/B recovery, because downtime and rollback behavior differ. Release
 notes split platform patch, vendor patch, and firmware.
 
 Evidence: the two fingerprints and the rejected-package result. A device
-that does not boot after the update has not met C2.
+that does not boot after the update has not met C2. The private key used to
+sign the package was not available to CI. The public fingerprint matches the
+one the owner generated offline.
+
+**C2a. Support window.** The Pixel 8 branch stays maintained while Google
+still ships firmware and security updates for it: seven years from US store
+availability, October 2023 through October 2030, unless Google publishes
+another end date. Each release note says whether the platform source tag
+moved, whether a Pixel firmware binary moved, or whether that month had
+nothing we could build. AOSP source publication in 2026 is Q2 and Q4, so a
+monthly bulletin without a source tag is not labelled as a full platform
+update. After the vendor window, the branch is labelled extended and the
+note lists only the fixes that image contains.
+
+Evidence: the end date on `docs/devices/shiba.md`, and one release note that
+uses the split above. The page does not exist until A2 starts.
 
 **C3. One modular update, where the Android version supports APEX.** Ship a
 single signed module update on the ELE-OS channel, or record why this device
@@ -151,27 +164,28 @@ labeled userdebug, because `adb root` is a hole in any setup gate.
 Evidence: `getenforce` and the package list check, pasted in the evidence
 note. This is pass/fail, not a hardening score.
 
-**D2. One extra permission control on Cuttlefish.** The working assumption,
-until the maintainer picks otherwise, is a per-app network control modeled
-on the idea of GrapheneOS's network permission: the app's existing
-`INTERNET` grant, denied in a way the app treats as network-down, rather than
-a packet filter alone. CalyxOS's Datura is the other precedent, with per
-transport toggles. We reimplement. We do not vendor either project's code in
-this milestone.
+**D2. Per-app Network toggle on Cuttlefish.** Decided. One on/off control per
+app, reimplemented from the idea of GrapheneOS's network permission: it is
+the app's existing `INTERNET` grant, and a denial is presented to the app as
+the network being down. It is granted by default so install compatibility
+holds. We do not copy GrapheneOS source in this milestone. CalyxOS's Datura
+per-transport firewall is a later control, not this one.
 
-The control is on by default for compatibility, matching those projects'
-published choice, unless a written compatibility note justifies default-deny.
 An app that is allowed network can open a socket. An app that is denied
 cannot. The baseband is unaffected, and the note says so.
 
 Evidence: the two app results on Cuttlefish, plus a list of behaviors that
-changed (sync, push, login). Not a phone result until repeated on a device
-in A2.
+changed (sync, push, login).
 
-**D3. Repeat D2 on each maintained device class** before the control is
-described as shipping there. Low-RAM devices get the same control only if
-B4 says the memory cost is acceptable. If it is not, the device page says
-the control is absent, and the image does not advertise it.
+**D3. The same toggle on every maintained class, including low-RAM.** The
+control is part of the product on the Pixel 8 and on the later low-RAM
+image. Measure its cost with the Track B protocol and publish the number.
+A class where the toggle cannot be implemented says so on the device page
+and does not advertise the control.
+
+**D4. Per-transport firewall.** After D3 has shipped, a Datura-style choice
+of Wi-Fi, mobile data, and VPN can be designed. It is not the first permission
+and it is not required for D2 to count as done.
 
 Hardware memory tagging and other chip features are not a track of their
 own. A Tier 3 device page may add one, with the chip's capability and a test,
@@ -235,34 +249,41 @@ Applies to every class, including the lean low-RAM image.
 
 **F1. Rules for our own UI.** Layouts use start/end constraints, text comes
 from resources, font scale can grow, and a control's name is available to an
-accessibility service. The External devices app is the only UI in the tree
-today. Its strings currently live in the activity source. It has not had an
-on-device accessibility pass. A change that internationalizes it has to meet
-F1 and still has to be checked on a device.
+accessibility service. Product UI follows these rules. The External devices
+app is an optional experiment, not the product UI. Its strings currently live
+in the activity source. A change that builds it still follows F1, and still
+needs a device check before anyone calls that app accessible.
 
-Evidence: review against those rules for each new UI. Automated host checks
-count when they exist. They do not replace a device pass.
+Evidence: review against those rules for each new product UI. Automated host
+checks count when they exist. They do not replace a device pass.
 
-**F2. A screen reader on Cuttlefish.** Select an open screen reader, put it
-in the product, and show that it reads the setup UI and one settings screen.
-A plain AOSP lunch target does not guarantee Google's TalkBack binary is
-present. "The framework has accessibility APIs" does not close F2.
+**F2. TalkBack on Cuttlefish, from source.** Build the screen reader from
+[google/talkback](https://github.com/google/talkback), which is Apache-2.0,
+pin the commit, and keep upstream's `LICENSE` and copyright. Install that
+APK in the product. Show that it reads the setup UI and one settings screen.
+Do not ship the Play Store "Android Accessibility Suite" binary. Public
+source is pushed in batches (the tree's latest push at the time of this
+decision was 2026-03-23) and can lag the Play build. A newer Play version
+with no matching source is not ours to ship. If a future drop changes the
+license away from Apache-2.0, stop and pick another open reader before
+shipping it. "The framework has accessibility APIs" does not close F2.
 
-Evidence: the component name and a recorded session. TalkBack on a stock
-Pixel is not this result.
+Evidence: the pinned commit, the license file in the build inputs, and a
+recorded session. TalkBack running on a stock Pixel is not this result.
 
-**F3. The lean-image rule.** No B4 change removes the accessibility framework
-or the screen reader chosen in F2. If a low-RAM build cannot boot with that
-reader, the device page says accessibility is unmet and the build is not
-offered as a daily driver.
+**F3. The same reader on every class, including low-RAM.** No B4 change
+removes the accessibility framework or the TalkBack build from F2. The
+low-RAM image includes it. If a low-RAM build cannot boot with it, that
+image is not offered until the conflict is fixed. Shipping a silent build
+without the reader is not the fix.
 
-Evidence: F2's reader still starts after the lean change, on that class of
-device.
+Evidence: F2's reader still starts after the lean change, on Cuttlefish with
+a low-RAM product if one exists, and on the later low-RAM handset.
 
 Contrast, magnification, and captions already in AOSP stay in the product
 unless a note explains a replacement that has been tested. We are not
-claiming a certification, and we are not claiming a better reader than
-TalkBack or VoiceOver.
+claiming a certification, and we are not claiming a better reader than a
+current Play Store TalkBack or than VoiceOver.
 
 ## Track G — What we will not schedule as a promise
 
@@ -274,17 +295,20 @@ TalkBack or VoiceOver.
 - Android Go certification.
 - Support for a device whose bootloader cannot be unlocked by a method we
   can legally document.
+- The External devices app. It stays in the tree as an optional experiment
+  and is not part of this roadmap.
 
 ## Suggested order
 
-The dependencies above allow this order without hiding a class of device:
-
 1. A1, B1, D1's definition, F1.
-2. In parallel: B2, E2, F2, and the search for the first handset (A2).
-3. A2's class drives B3, C2, D3, and either the revival case of B4 or a
-   flagship case of C3.
-4. A3 fills the class we do not have yet.
-5. E4 only if a Tier 3 device is actually on the desk.
+2. In parallel once A1 exists: B2, E2, F2, then A2 on a Pixel 8 whose OEM
+   unlocking toggle works.
+3. A2 then drives B3, C2, C2a, D3, and E4. E4 is in scope for this phone
+   because the hardware can relock. It is still unmet until the evidence
+   exists.
+4. A3, the low-RAM or older phone, after A2 has booted. B4's low-RAM case
+   waits for A3. F3 on a handset waits for that device too.
 
-The maintainer can swap A2's class. The evidence rules do not change if they
-do.
+The Pixel 8 is the first handset. Swapping it for another model means
+updating the decided entry in [open-questions.md](open-questions.md) with a
+kernel-source URL and a relock check of the same kind.

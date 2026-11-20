@@ -62,8 +62,9 @@ product:
 - `AndroidProducts.mk` adds the lunch target
   `ele_os_cf_x86_64-trunk_staging-userdebug`.
 - `ele_os_cf_x86_64.mk` inherits
-  `device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk` and adds the
-  packages `ele-status` and `ElePeripherals`.
+  `device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk` and adds
+  `ele-status` to the default image. `ElePeripherals` stays in the tree and
+  is not installed unless a local build adds it.
 - The image, when someone builds it, is signed with AOSP's public test-keys.
   Those keys are published in the AOSP tree. They are acceptable for a
   virtual development build and unacceptable for a phone offered to anyone
@@ -101,7 +102,7 @@ random source, consume it once even across crashes, and refuse to treat a
 corrupt record as "this phone was never enrolled." Owner transfer and loss of
 the recovery credential are not implemented. No device is protected.
 
-**External devices** (`peripherals/`) is an experimental app,
+**External devices** (`peripherals/`) is an optional experiment,
 `org.eleos.peripherals`. It previews Camera2 cameras that report
 `LENS_FACING_EXTERNAL`, and it shows whether the default network's
 capabilities include `TRANSPORT_SATELLITE`. On a handset, a preview needs USB
@@ -109,7 +110,8 @@ host mode, a UVC kernel path, and an external camera provider. A camera that
 only speaks PTP needs a different integration. A satellite terminal attached
 over Wi-Fi can look like ordinary Wi-Fi. An SMS-only satellite path does not
 have to create a default IP route. None of this has been validated on
-hardware. It is not one of the pillars.
+hardware. It is outside the core roadmap and is not in `PRODUCT_PACKAGES`.
+A developer who wants it in a local image adds `ElePeripherals` themselves.
 
 ### Planned components
 
@@ -119,12 +121,12 @@ These names describe jobs. They are not packages in the tree.
 | --- | --- | --- |
 | Product config per device class | Which packages and `ro.config.low_ram` settings a build gets | The virtual product has neither a lean package list nor `low_ram` set. Flagship and low-RAM configs must be different products. |
 | Update client | Apply a signed OTA with AOSP `update_engine` or recovery | Depends on A/B, virtual A/B, or non-A/B layout. All three exist in the phone market. |
-| Release signer | Offline signing of target files, APEXes, and OTA packages | Keys do not exist yet and must not be committed. |
+| Release signer | Offline signing of target files, APEXes, and OTA packages | Procedure decided below. Keys do not exist yet and must not be committed. CI uses test-keys only. |
 | Owner record | Device id plus owner Ed25519 public key, stored so a userdata wipe does not delete it | Only on devices that have such storage and a bootloader that will not casually erase it. |
 | Reactivation gate | Setup refuses to continue until a fresh owner proof is consumed | Requires the record and a setup path we control. userdebug `adb root` bypasses a careless gate. |
-| Recovery command channel | Signed locate, lock, and wipe messages | Optional, off until the owner enables it. Needs a network path the owner chose. |
-| Permission extensions | Per-app network and sensor controls beyond AOSP | Userspace, on any device running our system image. Does not constrain the baseband. |
-| Screen reader | An open accessibility service on every class, including low-RAM | Not selected. The framework APIs are in AOSP; a reader app is not automatically in an AOSP lunch target. |
+| Recovery command channel | Signed locate, lock, and wipe messages | Optional, off until the phone's owner enables it. Needs a network path that owner chose. |
+| Network toggle | One per-app on/off control for IP networking | Decided, not built. Userspace on any device running our system image, including low-RAM. Does not constrain the baseband. Per-transport firewall is later. |
+| TalkBack | Screen reader on every class, including low-RAM | Decided: build [google/talkback](https://github.com/google/talkback), Apache-2.0. Not yet in the image. A plain AOSP lunch target does not include it. |
 
 ## Update pipeline and signing
 
@@ -149,9 +151,9 @@ Three keys must stay distinct:
 
 | Key | Who holds it | What it authorizes |
 | --- | --- | --- |
-| OS release keys (APK, APEX, OTA, and the AVB key for `vbmeta`) | The project, offline | Integrity of the ELE-OS image and of updates. Anyone who locks a device to this AVB key trusts the project for the OS. |
-| Owner recovery key (Ed25519) | The owner, never the project | Reactivation after wipe, and remote locate / lock / wipe. |
-| AOSP test-keys | Published, everyone | Development images only. |
+| OS release keys (APK, APEX, OTA, and the AVB key for `vbmeta`) | The repository owner, offline | Integrity of the ELE-OS image and of updates. Anyone who locks a device to this AVB key trusts those keys for the OS. |
+| Owner recovery key (Ed25519) | The phone's owner, never the repository | Reactivation after wipe, and remote locate / lock / wipe. |
+| AOSP test-keys | Published, everyone, including CI | Development images only. |
 
 Verified boot colors, from the
 [boot flow](https://source.android.com/docs/security/features/verifiedboot/boot-flow)
@@ -191,10 +193,65 @@ properties `ele-status` already prints plus firmware:
   or by source we actually have. A flagship under vendor support is often
   ahead of us here. A phone after end of support is often stuck.
 
-AOSP's 2026 publication note (Q2 and Q4) means ELE-OS cannot promise a
-platform patch in a month whose source Google has not published. Device
-kernels we build ourselves can still take individual fixes when someone does
-that work. That work is per device, not an implied monthly bulletin.
+### How long a device is maintained
+
+Decided. Each device keeps a maintained branch for as long as its vendor
+ships firmware and security updates for that model. During that window the
+branch tracks security releases as often as we can actually build them.
+
+Two clocks run at once, and they are not the same clock:
+
+- Vendor firmware and the vendor security patch move when the vendor
+  publishes binaries we can install. Pixel updates have historically been
+  monthly. That cadence is the vendor's, and it stops when they say it stops.
+- Platform source moves when AOSP publishes it. AOSP's 2026 documentation
+  says source is published in Q2 and Q4. A monthly Android Security Bulletin
+  does not, by itself, put that month's platform fixes in a tree we can
+  compile. A release that only had a firmware binary says so. A month with
+  neither is a month we did not ship.
+
+Kernel fixes we write ourselves can land between those drops. That work is
+per device. It is not a claim that the whole bulletin was applied.
+
+For the first phone, the Pixel 8, Google's published policy is seven years
+of OS and security updates from first availability on the US Google Store
+([Pixel update policy](https://support.google.com/pixelphone/answer/4457705)).
+The Pixel 8 went on sale in October 2023, so the maintained branch runs
+through October 2030 unless Google publishes a different end date. CalyxOS's
+device-support table uses that same month.
+
+After the vendor stops, the branch is labelled **extended**. An extended
+branch lists only the fixes that build contains: platform changes we can
+still compile, and nothing we pretend arrived as a vendor firmware update.
+Extended is a clear label, not a second full-support promise.
+
+### Release keys, backup, and succession
+
+Decided. The repository owner holds the OS release keys. They are generated
+when the first release build is prepared, not before, and not on a CI runner.
+
+- Generate them on an offline machine, or on a hardware token. The machine
+  is not the one used for ordinary browsing, and it is not a cloud builder.
+- The public certificates and their fingerprints are what gets committed.
+  Private keys (`.pk8` and the AVB private key) stay off the git history,
+  off GitHub Actions, and off any secret store attached to this repository.
+- CI and Cuttlefish development builds keep using AOSP's public test-keys.
+  A test-key image is labelled as one.
+- Encrypt a copy of the private-key bundle with a passphrase-based tool the
+  owner can run offline. Keep that ciphertext in a separate physical place
+  from the machine or token that generated it. Keep the passphrase somewhere
+  else again, not next to the ciphertext.
+- Write down, on paper held by the owner, the name of one successor. A sealed
+  copy of the passphrase is stored so that successor can open the backup
+  without the passphrase sitting in the repository or in the same drawer as
+  the ciphertext. The successor's only jobs are to sign an update the
+  maintainers have already built, or to publish a signed note that the keys
+  are retired, together with the public fingerprint.
+- If neither the owner nor the successor can reach the keys, maintained
+  updates stop. Phones already locked to the old key keep running the last
+  image they trust. Installing a different key means unlocking the
+  bootloader, which wipes user data, and enrolling the new key. There is no
+  third escrow and no cloud copy of the private keys.
 
 ### Modular updates
 
@@ -453,8 +510,30 @@ tier.
 | 2 | Maintained | Any class whose bootloader unlocks and whose kernel we can build from source | Daily-driver candidate. Signed user or userdebug builds as the open-questions decision allows. OTA for the parts we rebuild, for as long as that branch is maintained. Encryption on, or the exception documented. Reset-surviving theft lock is not claimed. |
 | 3 | Relockable | Devices that implement a user-settable verified-boot key and a rollback story we can demonstrate | Tier 2, plus the bootloader locked to ELE-OS, owner record outside userdata, setup gate on a user build. Hardware-specific hardening (memory tagging, secure element) is listed only when that board has it. This tier is where a flagship with a modern bootloader belongs if we support it. It is not implied by the price of the phone. |
 
-No handset is in any tier. Admission criteria and the steps to add a device
-are in [device-support.md](device-support.md).
+No handset is in any tier yet. Cuttlefish stays the shared target until a
+boot of `ele_os_cf_x86_64` is recorded. The first real phone after that is a
+Google Pixel 8, codename `shiba`, aimed at Tier 3.
+
+Why this model, and not a newer Pixel or the Pixel 8 Pro: the owner asked
+for a recent Pixel in the Pixel 8 class, with a relockable verified boot, a
+custom key, published kernel source, and strong upstream support. AOSP's
+[Pixel kernel guide](https://source.android.com/docs/setup/build/building-pixel-kernels)
+(page updated 2026-07-13) lists `shiba` and the Pixel 8 Pro (`husky`) on the
+kernel branch `android-gs-shusky-6.1-android16`, GKI `android14-6.1`. Pixels
+implement a user-set verified-boot key via `avb_custom_key`. GrapheneOS and
+CalyxOS both ship relockable builds for `shiba`. Pixel 8 and later have
+hardware memory tagging. The non-Pro board avoids the Pro's extra camera
+hardware on the first port. The Pixel 8a uses a different kernel branch.
+Pixel 9 and later have a longer remaining vendor window and can follow; the
+same kernel guide's table stops at the Pixel 9a and does not list a Pixel 10
+or Pixel 11 branch, so those are a worse first target until that source link
+is checked. A carrier-sold unit whose OEM unlocking toggle cannot be enabled
+is not the unit we buy.
+
+`shiba` is a target, not a supported device. There is no device tree, no
+factory-image pin, and no boot log. Admission criteria are in
+[device-support.md](device-support.md). A low-RAM or older phone is a later
+milestone, after this port has a recorded boot.
 
 ## Licensing
 

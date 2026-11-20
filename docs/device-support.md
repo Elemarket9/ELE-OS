@@ -6,11 +6,34 @@ low-end or older phones. The tiers say how much of the architecture we will
 stand behind on that hardware. A newer phone is not automatically a higher
 tier. An older phone is not the only kind of phone we will add.
 
-No handset is supported today. The only registered product is the Cuttlefish
-virtual phone, and this repository has no recorded boot of it. Per-device
-pages, when a device is proposed, will live in `docs/devices/`. That
-directory is intentionally empty of device pages. See
-[devices/README.md](devices/README.md).
+No handset is supported today. Cuttlefish is the shared target until
+`ele_os_cf_x86_64` has a recorded boot. The first real phone after that is a
+Google Pixel 8 (`shiba`), chosen because it is a recent Pixel with a
+relockable custom verified-boot key, a published kernel branch, and existing
+upstream ports. The details and the reasons other Pixel models were not
+first are in the architecture doc. A low-RAM or older phone is roadmap
+milestone A3, after the Pixel 8 boots.
+
+Per-device pages will live in `docs/devices/`. That directory has no device
+page yet. See [devices/README.md](devices/README.md).
+
+The Pixel 8 maintained branch lasts while Google ships firmware and security
+updates for it. Google's policy is seven years from first US Google Store
+availability. The Pixel 8 went on sale in October 2023, so that is through
+October 2030 unless Google publishes a different date. Updates in that window
+track vendor binaries and AOSP source when those artifacts exist. They are
+not automatically monthly platform patches: AOSP's 2026 source publication
+is Q2 and Q4. After the vendor window the branch is labelled extended and
+contains only fixes we can still deliver. The same rule applies to every
+later device, using that vendor's end date.
+
+AOSP's Pixel kernel guide shows `fastboot oem disable-verification` before
+flashing a one-off custom kernel onto a stock platform image. That is a
+development shortcut. The ELE-OS install for `shiba` is a full image signed
+by the owner's release key, the public key written to `avb_custom_key`, and
+the bootloader locked again. Unlocking wipes user data. A unit whose OEM
+unlocking toggle cannot be switched on, which includes some carrier-sold
+Pixels, is out of scope.
 
 Tiers are defined in the [architecture](architecture.md#device-classes-and-support-tiers).
 Short form:
@@ -149,10 +172,13 @@ run.
    the evidence next to it. A maintainer's word without the log does not
    promote the device.
 
-The first device and the second device should not be the same class if we
-can help it, so the status page cannot be mistaken for "we only do old
-phones" or "we only do flagships." That is a roadmap milestone
-([A3](roadmap.md)), not a rule that blocks the first port.
+The first port is the Pixel 8. The second port is a low-RAM or older phone
+([A3](roadmap.md)), so the status page cannot be read as "flagships only" or
+"old phones only" once both exist. A3 does not block the Pixel 8 work.
+Another flagship proposed before A3 needs a reason that `shiba` does not
+already cover. Same-class variants such as the Pixel 8 Pro (`husky`) share
+the `shusky` kernel branch and can follow `shiba` without becoming the
+second class.
 
 ## Maintained-device checklist
 
