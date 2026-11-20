@@ -457,9 +457,11 @@ Apple's or Google's find-my networks.
 Faith is ELE-OS's built-in assistant, in the same role as Google Assistant or
 Siri: the owner can speak or type, and the phone can answer and can take a
 limited set of actions. That is the role. It is not a claim about answer
-quality, latency, or language coverage. The name is decided. Nothing in this
-section has been built, and this repository contains no model and no Faith
-package.
+quality, latency, or language coverage. The name is decided. A host
+prototype of the text service and the permission gate is in `faith/`. It is
+not installed in the Cuttlefish image, it has not booted on a GSI, and this
+repository contains no model weights. Speech and the wake phrase are not in
+that package. Roadmap H1 through H5 are not done.
 
 The suggested wake phrase is "Hey Faith". It is the phrase a new install
 listens for once the owner turns listening on. The owner can replace it with
