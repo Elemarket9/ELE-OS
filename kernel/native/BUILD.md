@@ -33,9 +33,11 @@ retain the upstream source and exact ELE revision for any binary release.
 The virtual smoke test boots the exact hashed image, mounts proc/sysfs,
 checks the ELE telemetry ABI, PSI and default BPF restriction, and requests
 guest poweroff. A timeout, missing marker or QEMU failure is a failure.
-It does not test a phone, Android userspace, performance, or actual
-memory-stress response. ARM64 boot needs its own test. No full build or boot
-evidence exists yet for this target. Host fixtures do not substitute for it.
+On 2026-11-20, GitHub Actions compiled the pinned Linux v7.3.5 ELE overlay for
+x86_64 and booted the exact hashed image in QEMU. Smoke checks covered pressure/PSI,
+unprivileged-BPF default policy, RWX mmap/mprotect denial, and unsigned module
+rejection. This does not verify ARM64, physical devices, Android compatibility,
+production signing, performance, pressure-stress thresholds, or writable aliases.
 
 The native track remains experimental: CPU scheduling, reclaim policy,
 cgroup pressure, GPU/NPU, device drivers, power and thermal integration
