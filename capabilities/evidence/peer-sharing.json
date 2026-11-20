@@ -1,0 +1,29 @@
+[
+  {
+    "id": "EOS-259",
+    "status": "In development",
+    "implementation_paths": [
+      "share/Android.bp",
+      "share/AndroidManifest.xml",
+      "share/src/org/eleos/share/ShareActivity.java",
+      "share/app/src/org/eleos/share/AndroidTlsPairing.java",
+      "share/protocol/TransferProtocol.java",
+      "tests/share/TransferProtocolTest.java",
+      "tests/share-protocol.sh",
+      "tests/share-sdk.sh"
+    ],
+    "integration_interfaces": [
+      "Android SEND and SEND_MULTIPLE share intents",
+      "Wi-Fi Direct peer discovery and TCP data channel",
+      "Android NSD local service discovery over available Wi-Fi or wired networks",
+      "AndroidKeyStore ephemeral P-256 identity and mutually authenticated TLS 1.3",
+      "SAF destination tree with hidden staging files, SHA-256 verification, and publication after validation"
+    ],
+    "security_considerations": "Only user-selected peers can proceed; both users must compare and confirm a session code. TLS 1.3 mutual authentication protects the data channel. File names are metadata, transfer frames and allocations are bounded, and each file is SHA-256 checked before publication. AndroidKeyStore backing level varies by device and is not claimed hardware-enforced.",
+    "outstanding_blockers": [
+      "Android SDK compilation and host protocol tests have been added to CI but have not yet passed on this change.",
+      "No two-device runtime transfer, sustained throughput, 30 GB / 30 second result, USB-Ethernet route, or storage-provider compatibility has been measured.",
+      "Interrupted transfer resume and Bluetooth fallback are not implemented."
+    ]
+  }
+]
