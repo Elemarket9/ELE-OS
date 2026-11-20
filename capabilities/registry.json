@@ -1824,16 +1824,24 @@
       "subsystem": "Battery and thermal management",
       "functional_requirements": "Control scanning, modem idle states and connection keepalives within protocols.",
       "architectural_dependencies": "telemetry, scheduler and device drivers",
-      "implementation_paths": [],
-      "workstream": "Battery and thermal management",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Measure idle energy and verify connection availability.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/BluetoothActivity.java",
+        "peripherals/src/org/eleos/peripherals/LinkQueue.java",
+        "tests/LinkQueueTest.java"
       ],
-      "commit_references": []
+      "workstream": "Battery and thermal management",
+      "integration_interfaces": [
+        "Android BluetoothLeScanner, BluetoothDevice.createBond, BluetoothGatt, system Bluetooth settings"
+      ],
+      "security_considerations": "Explicit nearby-device permission and selection; bonded-only GATT links, no writes, no location derivation or persistent address collection; foreground lifecycle and bounded resource use.",
+      "verification_requirements": "Measure idle energy and verify connection availability.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Bounded scan only; modem, radio power and coexistence policies pending."
+      ],
+      "commit_references": [
+        "047c137548319d426bc708bd6eae50d5da7ad8f8"
+      ]
     },
     {
       "id": "EOS-105",
@@ -2266,16 +2274,24 @@
       "subsystem": "Networking and internet",
       "functional_requirements": "Coordinate supported concurrent connections and shared radio time.",
       "architectural_dependencies": "sockets, device drivers, identity and firewall",
-      "implementation_paths": [],
-      "workstream": "Networking and internet",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Test multiple peripherals; measure latency and disconnect rates.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/BluetoothActivity.java",
+        "peripherals/src/org/eleos/peripherals/LinkQueue.java",
+        "tests/LinkQueueTest.java"
       ],
-      "commit_references": []
+      "workstream": "Networking and internet",
+      "integration_interfaces": [
+        "Android BluetoothLeScanner, BluetoothDevice.createBond, BluetoothGatt, system Bluetooth settings"
+      ],
+      "security_considerations": "Explicit nearby-device permission and selection; bonded-only GATT links, no writes, no location derivation or persistent address collection; foreground lifecycle and bounded resource use.",
+      "verification_requirements": "Test multiple peripherals; measure latency and disconnect rates.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Real controller concurrency, cross-profile radio scheduling and hardware tests pending."
+      ],
+      "commit_references": [
+        "047c137548319d426bc708bd6eae50d5da7ad8f8"
+      ]
     },
     {
       "id": "EOS-131",
@@ -2283,16 +2299,24 @@
       "subsystem": "Networking and internet",
       "functional_requirements": "Discover devices and establish authenticated pairing with clear user consent.",
       "architectural_dependencies": "sockets, device drivers, identity and firewall",
-      "implementation_paths": [],
-      "workstream": "Networking and internet",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Verify rejection of unauthorized pairing and revoked bonds.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/BluetoothActivity.java",
+        "peripherals/src/org/eleos/peripherals/LinkQueue.java",
+        "tests/LinkQueueTest.java"
       ],
-      "commit_references": []
+      "workstream": "Networking and internet",
+      "integration_interfaces": [
+        "Android BluetoothLeScanner, BluetoothDevice.createBond, BluetoothGatt, system Bluetooth settings"
+      ],
+      "security_considerations": "Explicit nearby-device permission and selection; bonded-only GATT links, no writes, no location derivation or persistent address collection; foreground lifecycle and bounded resource use.",
+      "verification_requirements": "Verify rejection of unauthorized pairing and revoked bonds.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Physical discovery/pairing and authenticated profile integration pending."
+      ],
+      "commit_references": [
+        "047c137548319d426bc708bd6eae50d5da7ad8f8"
+      ]
     },
     {
       "id": "EOS-132",
