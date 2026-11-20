@@ -1,0 +1,26 @@
+# Host checks only. This workflow does not sync AOSP, build an image,
+# boot Cuttlefish, or receive a release key. Development images use the
+# public AOSP test key named in ele_os_cf_build.mk.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  host:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the host toolchain
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends g++ libssl-dev
+
+      - name: Run host tests
+        run: CXX=g++ sh tests/run.sh
+
+      - name: Check the build contract
+        run: sh tests/check-build-contract.sh
