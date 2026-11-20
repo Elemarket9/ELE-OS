@@ -1639,16 +1639,26 @@
       "subsystem": "Battery and thermal management",
       "functional_requirements": "Estimate charge state from available current, voltage and temperature sensors.",
       "architectural_dependencies": "telemetry, scheduler and device drivers",
-      "implementation_paths": [],
-      "workstream": "Battery and thermal management",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Compare estimates with calibrated measurements across charge cycles.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/PowerActivity.java",
+        "peripherals/src/org/eleos/peripherals/PowerSnapshot.java",
+        "peripherals/src/org/eleos/peripherals/PowerAdmission.java",
+        "peripherals/src/org/eleos/peripherals/BluetoothActivity.java",
+        "tests/PowerAdmissionTest.java"
       ],
-      "commit_references": []
+      "workstream": "Battery and thermal management",
+      "integration_interfaces": [
+        "Android BatteryManager, ACTION_BATTERY_CHANGED, PowerManager current thermal status and saver; Bluetooth retry policy"
+      ],
+      "security_considerations": "Read-only foreground telemetry; conservative optional retry denial; no vendor control override.",
+      "verification_requirements": "Compare estimates with calibrated measurements across charge cycles.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Real battery/thermal behavior, per-app and per-subsystem energy estimates and wider OS integration unverified."
+      ],
+      "commit_references": [
+        "31084227ac71b449a5d0b961b11c05e35f95c95c"
+      ]
     },
     {
       "id": "EOS-092",
@@ -1936,16 +1946,26 @@
       "subsystem": "Battery and thermal management",
       "functional_requirements": "Reduce optional activity while preserving emergency and user-selected critical functions.",
       "architectural_dependencies": "telemetry, scheduler and device drivers",
-      "implementation_paths": [],
-      "workstream": "Battery and thermal management",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Trigger low charge; verify protected functions and reversible restrictions.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/PowerActivity.java",
+        "peripherals/src/org/eleos/peripherals/PowerSnapshot.java",
+        "peripherals/src/org/eleos/peripherals/PowerAdmission.java",
+        "peripherals/src/org/eleos/peripherals/BluetoothActivity.java",
+        "tests/PowerAdmissionTest.java"
       ],
-      "commit_references": []
+      "workstream": "Battery and thermal management",
+      "integration_interfaces": [
+        "Android BatteryManager, ACTION_BATTERY_CHANGED, PowerManager current thermal status and saver; Bluetooth retry policy"
+      ],
+      "security_considerations": "Read-only foreground telemetry; conservative optional retry denial; no vendor control override.",
+      "verification_requirements": "Trigger low charge; verify protected functions and reversible restrictions.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Real battery/thermal behavior, per-app and per-subsystem energy estimates and wider OS integration unverified."
+      ],
+      "commit_references": [
+        "31084227ac71b449a5d0b961b11c05e35f95c95c"
+      ]
     },
     {
       "id": "EOS-109",
@@ -1953,16 +1973,26 @@
       "subsystem": "Battery and thermal management",
       "functional_requirements": "Estimate per-app and per-subsystem energy with confidence labels.",
       "architectural_dependencies": "telemetry, scheduler and device drivers",
-      "implementation_paths": [],
-      "workstream": "Battery and thermal management",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Reconcile estimated totals against device power measurements.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "peripherals/src/org/eleos/peripherals/PowerActivity.java",
+        "peripherals/src/org/eleos/peripherals/PowerSnapshot.java",
+        "peripherals/src/org/eleos/peripherals/PowerAdmission.java",
+        "peripherals/src/org/eleos/peripherals/BluetoothActivity.java",
+        "tests/PowerAdmissionTest.java"
       ],
-      "commit_references": []
+      "workstream": "Battery and thermal management",
+      "integration_interfaces": [
+        "Android BatteryManager, ACTION_BATTERY_CHANGED, PowerManager current thermal status and saver; Bluetooth retry policy"
+      ],
+      "security_considerations": "Read-only foreground telemetry; conservative optional retry denial; no vendor control override.",
+      "verification_requirements": "Reconcile estimated totals against device power measurements.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Real battery/thermal behavior, per-app and per-subsystem energy estimates and wider OS integration unverified."
+      ],
+      "commit_references": [
+        "31084227ac71b449a5d0b961b11c05e35f95c95c"
+      ]
     },
     {
       "id": "EOS-110",
