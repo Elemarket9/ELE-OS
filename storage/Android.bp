@@ -1,0 +1,8 @@
+cc_binary {
+    name: "ele-store",
+    product_specific: true,
+    srcs: ["main.cpp", "atomic_store.cpp"],
+    shared_libs: ["libcrypto"],
+    cpp_std: "c++17",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

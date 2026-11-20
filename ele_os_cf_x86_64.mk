@@ -8,4 +8,4 @@ PRODUCT_MODEL := ELE-OS Virtual Phone
 # Device inventory is available in development images only (no automatic
 # camera or USB permission grant). It is not a claim of hardware validation.
 PRODUCT_PACKAGES += ele-status ele-resource
-PRODUCT_PACKAGES_DEBUG += ElePeripherals
+PRODUCT_PACKAGES_DEBUG += ElePeripherals ele-store

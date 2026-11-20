@@ -47,5 +47,6 @@ PRODUCT_SYSTEM_PROPERTIES += \
     ro.eleos.prototype=1
 
 PRODUCT_PACKAGES += ele-status ele-resource
+PRODUCT_PACKAGES_DEBUG += ele-store
 
 $(call inherit-product, device/ele/os/products/common.mk)
