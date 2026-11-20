@@ -3,8 +3,8 @@
 ELE-Kernel is intended to become an independently maintained Linux-derived
 kernel, not a claim of a new kernel written from scratch. The experimental
 upstream target is Linux v7.3.5 (2026-11-17); Android 17's 6.18 GKI family is
-a candidate compatibility target; the existing AOSP product remains
-unchanged. Neither candidate has been built here, and newer version numbers
+the required Android compatibility target; the existing AOSP product remains
+unchanged. Neither target has been built here, and newer version numbers
 alone are not evidence of superior performance. Do not assume an Android 16
 vendor image can boot with either kernel.
 
