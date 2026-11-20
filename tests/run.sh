@@ -13,3 +13,6 @@ mkdir "$tmp/fixture"
 "$tmp/session" "$tmp/fixture"
 sh tests/status.sh
 sh tests/ota.sh
+"$cxx" -std=c++17 -Wall -Wextra -Werror -Iresource tests/resource_policy.cpp -o "$tmp/resource_policy"
+"$tmp/resource_policy"
+printf 'Resource advisory policy checks passed\n'
