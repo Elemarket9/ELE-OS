@@ -13,3 +13,6 @@ mkdir "$tmp/fixture"
 "$tmp/session" "$tmp/fixture"
 sh tests/status.sh
 sh tests/ota.sh
+if [ -f faith/llm/check.sh ]; then
+    sh faith/llm/check.sh
+fi
