@@ -18,4 +18,13 @@ for e, (ident, title, build, acceptance) in zip(entries, original):
         assert (root / path).is_file(), path
     if e["status"] == "Complete":
         assert e["commit_references"] and e["implementation_paths"] and not e["outstanding_blockers"]
+# Workstream evidence must already be merged (tools/merge_evidence.py) and
+# host evidence alone never exceeds "Source implemented".
+by_id = {e["id"]: e for e in entries}
+for path in sorted((root / "capabilities/evidence").glob("*.json")):
+    for ev in json.loads(path.read_text()):
+        cap = by_id[ev["id"]]
+        assert ev["status"] in ("Not started", "In development", "Source implemented"), (path.name, ev["id"])
+        for key in ("status", "implementation_paths", "outstanding_blockers"):
+            assert cap[key] == ev[key], f"{ev['id']} {key} not merged from {path.name}"
 print("350 capability IDs and original requirements verified")
