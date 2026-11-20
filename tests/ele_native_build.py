@@ -21,7 +21,7 @@ class NativeTests(unittest.TestCase):
     def test_config(self):
         for arch, flags in b.ARCH_FLAGS.items():
             good = "\n".join("CONFIG_" + x + "=y" for x in b.COMMON + flags)
-            good += '\nCONFIG_LOCALVERSION="-eleos"\n# CONFIG_LOCALVERSION_AUTO is not set'
+            good += '\nCONFIG_LOCALVERSION="-eleos"\n# CONFIG_LOCALVERSION_AUTO is not set\n# CONFIG_PSI_DEFAULT_DISABLED is not set'
             b.verify_config(good, arch)
             for x in b.COMMON + flags:
                 with self.assertRaises(ValueError):

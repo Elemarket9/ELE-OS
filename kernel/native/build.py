@@ -52,7 +52,7 @@ def verify_config(text, arch):
         values[name] = value
     required = {name: "y" for name in COMMON + ARCH_FLAGS[arch]}
     required.update(LOCALVERSION='"' + PIN["localversion"] + '"',
-                    LOCALVERSION_AUTO="n")
+                    LOCALVERSION_AUTO="n", PSI_DEFAULT_DISABLED="n")
     bad = [x for x, v in required.items() if values.get(x) != v]
     if bad:
         raise ValueError("missing/incorrect kernel options: " + ", ".join(bad))
@@ -105,7 +105,7 @@ def build(source, output, arch, jobs, cross):
         run("git", "worktree", "add", "--detach", work, PIN["commit"], cwd=source)
         try:
             integrate(work)
-            make = ["make", "-C", work, f"O={obj}", f"ARCH={arch}"]
+            make = ["make", "-C", work, f"O={obj}", f"ARCH={arch}", "LOCALVERSION="]
             if cross:
                 make.append(f"CROSS_COMPILE={cross}")
             run(*make, "defconfig")
@@ -113,7 +113,7 @@ def build(source, output, arch, jobs, cross):
             for name in COMMON + ARCH_FLAGS[arch]:
                 config += ["--enable", name]
             config += ["--set-str", "LOCALVERSION", PIN["localversion"],
-                       "--disable", "LOCALVERSION_AUTO"]
+                       "--disable", "LOCALVERSION_AUTO", "--disable", "PSI_DEFAULT_DISABLED"]
             run(*config)
             run(*make, "olddefconfig")
             verify_config((obj / ".config").read_text(), arch)
