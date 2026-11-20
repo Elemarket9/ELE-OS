@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config ELE_PRESSURE
+	tristate "ELE-Kernel memory pressure telemetry"
+	depends on SYSFS && MMU
+	default n
+	help
+	  Publish a read-only global memory-pressure snapshot with hysteresis.
+	  This is advisory telemetry, not a task killer or reclaim controller.
+	  Select Y to include it in the ELE-Kernel image.

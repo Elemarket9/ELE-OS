@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-20",
+  "status_vocabulary": {
+    "source_present": "Boolean: implementation code exists in cited source tree.",
+    "compiled": "Boolean: true only after successful compilation of the cited revision.",
+    "integrated": "Boolean: source is connected to a kernel build target; this does not mean merged to main.",
+    "runtime_verified": "Boolean: true only after runtime behavior is exercised on the exact artifact.",
+    "hardware_verified": "Boolean: true only after verification on identified physical hardware.",
+    "status_fields": "Adjacent *_status and evidence fields explain pending work and source evidence."
+  },
+  "tracks": {
+    "independent_linux": {
+      "target": "Linux stable v7.3.5",
+      "target_pin": "kernel/native/upstream.json",
+      "source_present": true,
+      "build_overlay_present": true,
+      "compiled": false,
+      "integrated": true,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": [
+        "kernel/native/build.py",
+        "kernel/native/BUILD.md",
+        ".github/workflows/native-kernel.yml"
+      ],
+      "compile_status": "Build and boot workflow is running or queued for the current PR revision.",
+      "integration_status": "Overlay integrated by the experimental builder; PR #33 is not merged to main.",
+      "merged_to_main": false,
+      "runtime_status": "Awaiting x86_64 QEMU smoke stage."
+    },
+    "android_common_kernel": {
+      "target": "common-android17-6.18",
+      "source_present": true,
+      "compiled": false,
+      "integrated": true,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": [
+        "kernel/build.py",
+        "kernel/eleos_defconfig",
+        "kernel/README.md"
+      ],
+      "notes": "Kleaf build entry point and version/config guards exist on main. No ACK build, Cuttlefish boot, KMI validation, or handset verification recorded.",
+      "compile_status": "No successful ACK compile recorded.",
+      "integration_status": "Kleaf entry point targets virtual-device builds.",
+      "runtime_status": "No Cuttlefish boot recorded."
+    }
+  },
+  "components": [
+    {
+      "id": "ELE-MemSafe-pressure",
+      "scope": "Global memory-pressure classification and telemetry",
+      "source_present": true,
+      "compiled": false,
+      "integrated": true,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "enforcement": "Advisory telemetry only; does not reclaim memory, compress pages, or control OOM.",
+      "evidence": [
+        "kernel/native/pressure/ele_pressure.c",
+        "kernel/native/pressure/ele_pressure_policy.h"
+      ],
+      "integration_status": "Experimental native overlay; not merged into main"
+    },
+    {
+      "id": "ELE-MemSafe-wx",
+      "scope": "Deny mappings requesting simultaneous write and execute",
+      "source_present": true,
+      "compiled": false,
+      "integrated": true,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "enforcement": "Intended per-mapping denial only. Writable aliases, RW-to-RX JIT policy, architecture-specific behavior, and Android compatibility remain unverified.",
+      "evidence": [
+        "kernel/native/security/ele_memguard.h",
+        "kernel/native/build.py",
+        "kernel/native/smoke_init.c"
+      ],
+      "integration_status": "Experimental native build injects checks in common security mmap/mprotect dispatch"
+    },
+    {
+      "id": "ELE-Shield-module-signing",
+      "scope": "Require authenticated kernel modules",
+      "source_present": true,
+      "compiled": false,
+      "integrated": true,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "enforcement": "Build configuration plus QEMU test exists; actual build and rejection test pending.",
+      "evidence": [
+        "kernel/native/build.py",
+        "kernel/native/smoke_init.c"
+      ],
+      "integration_status": "Experimental build config enables forced module signatures"
+    },
+    {
+      "id": "ELE-Shield-kernel-hardening",
+      "scope": "Selected upstream kernel hardening options",
+      "source_present": true,
+      "compiled": false,
+      "integrated": true,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "enforcement": "Effective Kconfig resolution is checked by builder; runtime coverage pending.",
+      "evidence": [
+        "kernel/native/build.py"
+      ],
+      "integration_status": "Experimental build config requests strict kernel/module RWX, KASLR, fortified copy, usercopy, slab hardening, and init-on-allocation"
+    },
+    {
+      "id": "ELE-Verify-secure-boot",
+      "scope": "Hardware-rooted boot chain, verified images, rollback prevention and owner key lifecycle",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-Hypervisor",
+      "scope": "Protected VM, isolated services, IOMMU and critical secret separation",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-Vault",
+      "scope": "Hardware-backed credentials, key lifecycle and attestation",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-Guard",
+      "scope": "Universal process/application capabilities, syscall, filesystem and hardware sandbox",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-NetShield",
+      "scope": "Kernel per-application network policy, DNS/VPN isolation and traffic controls",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-Recovery",
+      "scope": "Authenticated recovery, panic evidence, atomic rollback and interrupted-update recovery",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-Scheduler",
+      "scope": "ELE-specific adaptive scheduling, heterogeneous placement, fairness and thermal/energy policy",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-Memory",
+      "scope": "Adaptive reclaim, compression, cgroup policy, NUMA and GPU/NPU coordination",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-Power-Thermal",
+      "scope": "Frequency, battery, thermal, suspend/resume and wake policy",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-Drivers",
+      "scope": "Modular device drivers, USB, cameras, Bluetooth, Wi-Fi, NFC, satellite and peripherals",
+      "source_present": false,
+      "compiled": false,
+      "integrated": false,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": []
+    },
+    {
+      "id": "ELE-Android-ACK",
+      "scope": "Binder, GKI/KMI, SELinux, HALs, runtime, graphics/camera and Bluetooth compatibility on ACK 6.18",
+      "source_present": true,
+      "compiled": false,
+      "integrated": true,
+      "runtime_verified": false,
+      "hardware_verified": false,
+      "evidence": [
+        "kernel/build.py"
+      ],
+      "notes": "Build scaffold only: kernel/build.py pins the intended branch name, rejects non-6.18 versions, runs Kleaf targets, validates a config and image header, and writes provenance. It does not validate manifest identity, compile/boot evidence, KMI, Binder, SELinux, HALs, graphics, camera, Bluetooth, or APK compatibility."
+    }
+  ],
+  "release_gate": "Do not mark complete until all required components have source, successful target builds, appropriate runtime/security tests, and hardware results where hardware is required."
+}

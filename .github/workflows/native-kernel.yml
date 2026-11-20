@@ -1,0 +1,33 @@
+name: native-kernel
+on:
+  pull_request:
+    paths:
+      - 'kernel/native/**'
+      - '.github/workflows/native-kernel.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-and-boot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install kernel and emulator toolchain
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential bc bison flex libelf-dev libssl-dev dwarves cpio rsync qemu-system-x86
+      - name: Fetch pinned upstream
+        run: git clone --depth 1 --branch v7.3.5 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git "$RUNNER_TEMP/linux-ele"
+      - name: Compile native kernel
+        run: python3 kernel/native/build.py "$RUNNER_TEMP/linux-ele" "$RUNNER_TEMP/ele-dist" --jobs 4
+      - name: Boot built image in QEMU
+        run: python3 kernel/native/smoke.py "$RUNNER_TEMP/ele-dist" "$RUNNER_TEMP/ele-boot.log" --timeout 240
+      - name: Retain verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ele-native-boot-evidence
+          path: |
+            ${{ runner.temp }}/ele-boot.log
+            ${{ runner.temp }}/ele-dist/ele-build.json
+            ${{ runner.temp }}/ele-dist/kernel.config
+          if-no-files-found: warn
