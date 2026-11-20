@@ -93,3 +93,20 @@ device work.
 After launching the ELE-OS Cuttlefish image, run
 `sh tests/check-boot.sh SERIAL` from a Linux host with adb and GNU timeout.
 It waits for boot completion and checks the ELE-OS product and memory report.
+
+## External cameras and satellite connectivity
+
+The External devices app previews Camera2 external cameras and offers a picker
+when multiple cameras are exposed. On a handset, USB host mode, UVC kernel
+support and a configured external camera provider are prerequisites. Test the
+exact Canon model and USB mode, or a compatible HDMI-to-UVC capture adapter.
+A camera exposing only PTP needs a separate import/tethering integration.
+
+The app also displays whether Android identifies the default data network as
+satellite. A satellite terminal connected over Wi-Fi can appear as ordinary
+Wi-Fi. SMS-only satellite service need not create a default IP route.
+Direct handset messaging requires supported modem firmware, provisioning,
+and a participating network. Live device, camera and carrier validation is
+pending. For comparison with stock firmware, record preview startup latency,
+frame drops, unplug/reconnect behavior, and satellite message delivery receipts
+on matching hardware and service plans.

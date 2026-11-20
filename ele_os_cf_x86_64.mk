@@ -5,4 +5,4 @@ PRODUCT_DEVICE := vsoc_x86_64_only
 PRODUCT_BRAND := ELE-OS
 PRODUCT_MODEL := ELE-OS Virtual Phone
 
-PRODUCT_PACKAGES += ele-status
+PRODUCT_PACKAGES += ele-status ElePeripherals
