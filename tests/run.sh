@@ -12,3 +12,9 @@ cxx=${CXX:-c++}
 mkdir "$tmp/fixture"
 "$tmp/session" "$tmp/fixture"
 sh tests/status.sh
+# Host checks that do not need a device or an AOSP tree. An unmatched
+# glob is left as a literal and skipped.
+for host_test in tests/host-*.sh; do
+    [ -f "$host_test" ] || continue
+    sh "$host_test"
+done
