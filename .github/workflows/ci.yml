@@ -48,3 +48,7 @@ jobs:
           test -x "$manager"
           "$manager" "platforms;android-36" "build-tools;36.0.0"
           ELE_API=36 ELE_BUILD_TOOLS="$ANDROID_HOME/build-tools/36.0.0" sh tests/peripherals-sdk.sh "$RUNNER_TEMP/peripherals-sdk"
+      - name: Compile built-in share app against Android 36
+        run: ELE_API=36 ELE_BUILD_TOOLS="$ANDROID_HOME/build-tools/36.0.0" sh tests/share-sdk.sh "$RUNNER_TEMP/share-sdk"
+      - name: Run streaming share protocol tests
+        run: sh tests/share-protocol.sh

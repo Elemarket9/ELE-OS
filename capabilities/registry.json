@@ -4582,16 +4582,35 @@
       "subsystem": "Distributed computing",
       "functional_requirements": "Protect job data and results with authenticated encrypted channels.",
       "architectural_dependencies": "authenticated networking, virtualization and resource quotas",
-      "implementation_paths": [],
-      "workstream": "Distributed computing",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Reject unauthorized peers and altered or replayed transport messages.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "share/Android.bp",
+        "share/AndroidManifest.xml",
+        "share/src/org/eleos/share/ShareActivity.java",
+        "share/app/src/org/eleos/share/AndroidTlsPairing.java",
+        "share/protocol/TransferProtocol.java",
+        "tests/share/TransferProtocolTest.java",
+        "tests/share-protocol.sh",
+        "tests/share-sdk.sh"
       ],
-      "commit_references": []
+      "workstream": "Distributed computing",
+      "integration_interfaces": [
+        "Android SEND and SEND_MULTIPLE share intents",
+        "Wi-Fi Direct peer discovery and TCP data channel",
+        "Android NSD local service discovery over available Wi-Fi or wired networks",
+        "AndroidKeyStore ephemeral P-256 identity and mutually authenticated TLS 1.3",
+        "SAF destination tree with hidden staging files, SHA-256 verification, and publication after validation"
+      ],
+      "security_considerations": "Only user-selected peers can proceed; both users must compare and confirm a session code. TLS 1.3 mutual authentication protects the data channel. File names are metadata, transfer frames and allocations are bounded, and each file is SHA-256 checked before publication. AndroidKeyStore backing level varies by device and is not claimed hardware-enforced.",
+      "verification_requirements": "Reject unauthorized peers and altered or replayed transport messages.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Android SDK compilation and host protocol tests have been added to CI but have not yet passed on this change.",
+        "No two-device runtime transfer, sustained throughput, 30 GB / 30 second result, USB-Ethernet route, or storage-provider compatibility has been measured.",
+        "Interrupted transfer resume and Bluetooth fallback are not implemented."
+      ],
+      "commit_references": [
+        "bd9c8155337c4579d9b5b1952065b5d09314fb72"
+      ]
     },
     {
       "id": "EOS-260",

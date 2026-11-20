@@ -87,6 +87,10 @@ grep -q 'device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk' ele_os_cf_x
     || fail "identity makefile must inherit the AOSP Cuttlefish phone"
 grep -q '^PRODUCT_DEVICE := vsoc_x86_64_only$' ele_os_cf_x86_64.mk \
     || fail "identity makefile must stay on the Cuttlefish device"
+grep -q 'PRODUCT_PACKAGES += .*EleShare' ele_os_cf_x86_64.mk \
+    || fail "Cuttlefish image must include the built-in ELE Share app"
+grep -q 'PRODUCT_PACKAGES += .*EleShare' ele_os_gsi_arm64.mk \
+    || fail "arm64 GSI must include the built-in ELE Share app"
 
 # Certificate and package guards apply to makefiles we control. The identity
 # makefile is included so a GMS inherit cannot land there unnoticed.

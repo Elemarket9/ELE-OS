@@ -51,6 +51,10 @@ mmap and mprotect security dispatch path. It does not prevent writable aliases,
 RW-to-RX transitions, or in-kernel compromise. The strict profile may break
 legacy apps or JITs requiring RWX; Android compatibility is not established.
 The build requires signed modules, slab hardening, fortified copies, seccomp,
-zero-on-allocation and hardened usercopy. The QEMU smoke runs denial tests.
+zero-on-allocation and zero-on-free, separate slab buckets, and hardened
+usercopy. Zero-on-free wipes freed page/slab contents to reduce stale-data
+exposure; upstream warns of a typical 3–5% performance cost, which has not
+been measured on ELE-OS devices. The QEMU smoke runs denial tests, but does
+not directly inspect freed allocator memory.
 The kernel-generated signing key is development-only and is not distributed;
 production keys, verified boot and rollback protection are separate work.

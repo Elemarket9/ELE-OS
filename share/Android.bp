@@ -1,0 +1,7 @@
+android_app {
+    name: "EleShare",
+    srcs: ["src/**/*.java", "app/src/**/*.java", "protocol/**/*.java"],
+    sdk_version: "current",
+    min_sdk_version: "35",
+    product_specific: true,
+}
