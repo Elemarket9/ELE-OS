@@ -16,6 +16,7 @@
 # it is set so a later edit has to change this line to use another key.
 
 $(call inherit-product, $(LOCAL_DIR)/ele_os_cf_x86_64.mk)
+$(call inherit-product, $(LOCAL_DIR)/talkback/ele_talkback.mk)
 
 # The virtual product is not a handset from a phone maker.
 PRODUCT_MANUFACTURER := ELE-OS

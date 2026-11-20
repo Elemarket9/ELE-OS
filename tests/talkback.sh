@@ -83,7 +83,10 @@ done
 
 # device/ele/os/PATH -> PATH, for inherit-product lines in this overlay.
 inherits_of() {
-    sed -n 's/.*device\/ele\/os\///p' "$1" | tr -d ' )'
+    sed -n \
+        -e 's/.*device\/ele\/os\///p' \
+        -e 's/.*\$(LOCAL_DIR)\///p' \
+        "$1" | tr -d ' )'
 }
 
 reaches_talkback() {
@@ -134,7 +137,7 @@ for product in "$@"; do
     seen=
     reaches_talkback "$product" || fail "$product does not inherit TalkBack"
     name=$(product_name_of "$product") || fail "PRODUCT_NAME for $product"
-    grep -q "$name-trunk_staging-userdebug" AndroidProducts.mk \
+    grep -q "$name-aosp_current-userdebug" AndroidProducts.mk \
         || fail "lunch choice for $name"
     case "$name" in
         *lowram*)

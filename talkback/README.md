@@ -75,7 +75,7 @@ not require `EleTalkBack.apk`.
 
 | Product | Role |
 | --- | --- |
-| `ele_os_cf_x86_64` | Cuttlefish virtual phone. Does not set `ro.config.low_ram`. |
+| `ele_os_cf_x86_64` | Cuttlefish virtual phone, registered as `ele_os_cf_build.mk`. Lunch release config `aosp_current`. Does not set `ro.config.low_ram`. |
 | `ele_os_cf_x86_64_lowram` | Same virtual phone with `ro.config.low_ram=true`. |
 | `ele_os_gsi_arm64` | Device-neutral Treble GSI, generic ARM64, no phone maker. |
 | `ele_os_gsi_arm64_lowram` | Same GSI with `ro.config.low_ram=true`. |
