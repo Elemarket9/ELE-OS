@@ -66,6 +66,8 @@ public final class DevicesActivity extends Activity implements SurfaceHolder.Cal
         setContentView(R.layout.devices);
         route = findViewById(R.id.route);
         inventory = findViewById(R.id.inventory);
+        findViewById(R.id.open_bluetooth).setOnClickListener(v ->
+                startActivity(new android.content.Intent(this, BluetoothActivity.class)));
         findViewById(R.id.refresh_devices).setOnClickListener(v -> refreshInventory());
         status = findViewById(R.id.status);
         preview = findViewById(R.id.preview);
