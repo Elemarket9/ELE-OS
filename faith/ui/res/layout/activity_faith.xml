@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prototype_banner" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="@string/image_targets" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="@string/section_wake" />
+
+        <EditText
+            android:id="@+id/phrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/phrase_hint"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:minHeight="48dp" />
+
+        <Button
+            android:id="@+id/save_phrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/save_phrase" />
+
+        <TextView
+            android:id="@+id/phrase_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityLiveRegion="polite" />
+
+        <TextView
+            android:id="@+id/active_phrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp" />
+
+        <Switch
+            android:id="@+id/listen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/listen" />
+
+        <TextView
+            android:id="@+id/mic_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityLiveRegion="polite" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="@string/section_message" />
+
+        <EditText
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/message_hint"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minHeight="48dp" />
+
+        <Button
+            android:id="@+id/send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/send" />
+
+        <TextView
+            android:id="@+id/reply"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityLiveRegion="polite"
+            android:paddingTop="8dp"
+            android:text="@string/reply_idle" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="@string/section_cloud" />
+
+        <Switch
+            android:id="@+id/cloud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/cloud" />
+
+        <EditText
+            android:id="@+id/endpoint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/endpoint_hint"
+            android:inputType="textUri"
+            android:minHeight="48dp" />
+
+        <Button
+            android:id="@+id/save_endpoint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/save_endpoint" />
+
+        <TextView
+            android:id="@+id/cloud_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityLiveRegion="polite"
+            android:paddingTop="8dp" />
+    </LinearLayout>
+</ScrollView>
