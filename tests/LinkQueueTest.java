@@ -22,6 +22,17 @@ public final class LinkQueueTest {
         check(q.next() == null && !q.remove("missing"));
         q.clear();
         check(q.ids().isEmpty() && q.next() == null);
-        System.out.println("BLE admission queue checks passed");
+        check(q.enqueue("a") && q.enqueue("b"));
+        check("a".equals(q.next()) && q.defer("a"));
+        check("b".equals(q.next()) && q.ready("b"));
+        check(q.count(LinkQueue.State.BACKOFF)==1 && q.requeue("a"));
+        check("a".equals(q.next()) && q.ready("a") && q.defer("a"));
+        check(q.remove("a") && !q.requeue("a"));
+        RetryBudget retry = new RetryBudget();
+        check(retry.nextDelay(0)==1000);
+        check(retry.nextDelay(-1)==2250);
+        check(retry.nextDelay(0)==4000);
+        check(retry.nextDelay(0)==-1 && retry.nextDelay(0)==-1);
+        System.out.println("BLE admission and recovery queue checks passed");
     }
 }

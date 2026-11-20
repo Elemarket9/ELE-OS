@@ -101,7 +101,7 @@
     <string name="bt_disconnected">A BLE connection ended. You can reconnect manually.</string>
     <string name="bt_timeout">BLE connection or service discovery timed out.</string>
     <string name="bt_closed">All tool connections closed.</string>
-    <string name="bt_summary">Ready: %1$d · Opening: %2$d · Queued: %3$d</string>
+    <string name="bt_summary">Ready: %1$d · Opening: %2$d · Queued: %3$d · Retrying: %4$d</string>
     <string name="bt_services">Ready — %1$d services reported</string>
     <string name="bt_opening">Opening</string>
     <string name="bt_queued">Queued</string>
@@ -131,4 +131,6 @@
     <string name="net_mtu_unknown">Configured MTU: default or unknown</string>
     <string name="net_rate_unknown">Observed interface traffic: awaiting valid interval</string>
     <string name="net_rate">Observed interface traffic: received %1$d B/s, sent %2$d B/s</string>
+    <string name="bt_retry_opt_in">Allow up to three automatic retries for new connection requests while this screen is open</string>
+    <string name="bt_retry_wait">Waiting for bounded reconnect attempt</string>
 </resources>

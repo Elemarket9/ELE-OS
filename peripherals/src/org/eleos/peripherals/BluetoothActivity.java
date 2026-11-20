@@ -21,12 +21,14 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.text.BidiFormatter;
 import android.widget.TextView;
+import android.widget.CheckBox;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** Explicit, foreground-only BLE service discovery. No location derivation,
  * background reconnect, persistent addresses, characteristic writes or profile overrides.
+ * Optional bounded retries are tied to an explicit foreground request.
  */
 public final class BluetoothActivity extends Activity {
     private static final int PERMISSIONS = 8;
@@ -38,16 +40,19 @@ public final class BluetoothActivity extends Activity {
     private final Map<String, BluetoothDevice> seen = new LinkedHashMap<>();
     private final Map<String, BluetoothDevice> requested = new LinkedHashMap<>();
     private final Map<String, Session> sessions = new LinkedHashMap<>();
+    private final Map<String, RetryBudget> budgets = new LinkedHashMap<>();
+    private final Map<String, Runnable> retries = new LinkedHashMap<>();
     private BluetoothAdapter adapter;
     private BluetoothLeScanner scanner;
     private ScanCallback scan;
     private TextView status, links;
+    private CheckBox retryEnabled;
     private boolean visible;
     private final Runnable stopScanTask = () -> stopScan(true);
     private final Runnable watch = new Runnable() {
         @Override public void run() {
             if (!visible) return;
-            if (!usable()) {
+            if (!usable() && (scan != null || !queue.ids().isEmpty())) {
                 stopScan(false);
                 closeAll();
                 status.setText(R.string.bt_unavailable);
@@ -102,6 +107,15 @@ public final class BluetoothActivity extends Activity {
         setContentView(R.layout.bluetooth);
         status = findViewById(R.id.bt_status);
         links = findViewById(R.id.bt_links);
+        retryEnabled = findViewById(R.id.bt_retry);
+        // Turning off retries cancels pending retry timers, not ready connections.
+        retryEnabled.setOnCheckedChangeListener((button, enabled) -> {
+            if (!enabled) {
+                for (String id : new ArrayList<>(retries.keySet())) release(id);
+                render();
+                pump();
+            }
+        });
         BluetoothManager manager = getSystemService(BluetoothManager.class);
         adapter = manager == null ? null : manager.getAdapter();
         findViewById(R.id.bt_settings).setOnClickListener(v ->
@@ -199,6 +213,9 @@ public final class BluetoothActivity extends Activity {
     private void choose(boolean pairing) {
         stopScan(false);
         if (!visible || !usable()) return;
+        if (pairing && queue.count(LinkQueue.State.OPENING) != 0) {
+            status.setText(R.string.bt_wait); return;
+        }
         try {
             ArrayList<BluetoothDevice> choices = new ArrayList<>();
             Iterable<BluetoothDevice> candidates = pairing ? seen.values() : adapter.getBondedDevices();
@@ -232,6 +249,7 @@ public final class BluetoothActivity extends Activity {
                                 }
                                 if (!queue.enqueue(id)) { status.setText(R.string.bt_limit); return; }
                                 requested.put(id, device);
+                                if (retryEnabled.isChecked()) budgets.put(id, new RetryBudget());
                                 render();
                                 pump();
                             }
@@ -260,22 +278,51 @@ public final class BluetoothActivity extends Activity {
                     }
                 }
             } catch (RuntimeException ignored) { }
-            release(id);
-            status.setText(R.string.bt_failed);
+            if (!scheduleRetry(id)) {
+                release(id);
+                status.setText(R.string.bt_failed);
+            }
         }
         render();
     }
     private void finish(Session s, int message) {
         if (!current(s)) return;
-        release(s.id);
-        status.setText(message);
+        if (!scheduleRetry(s.id)) {
+            release(s.id);
+            status.setText(message);
+        }
         render();
         pump();
     }
-    private void release(String id) {
+    private boolean scheduleRetry(String id) {
+        RetryBudget budget = budgets.get(id);
+        BluetoothDevice device = requested.get(id);
+        if (!visible || !usable() || !retryEnabled.isChecked() || budget == null || device == null) return false;
+        try {
+            if (device.getBondState() != BluetoothDevice.BOND_BONDED) return false;
+        } catch (RuntimeException ex) { return false; }
+        long delay = budget.nextDelay(id.hashCode());
+        if (delay < 0 || !queue.defer(id)) return false;
+        closeSession(id);
+        Runnable task = new Runnable() {
+            @Override public void run() {
+                if (retries.get(id) != this) return;
+                retries.remove(id);
+                if (!visible || !usable() || !retryEnabled.isChecked() || !queue.requeue(id)) {
+                    release(id);
+                    render();
+                    return;
+                }
+                pump();
+            }
+        };
+        retries.put(id, task);
+        main.postDelayed(task, delay);
+        status.setText(R.string.bt_retry_wait);
+        return true;
+    }
+    private void closeSession(String id) {
         Session s = sessions.remove(id);
-        queue.remove(id);
-        requested.remove(id);
         if (s != null) {
             main.removeCallbacks(s.timeout);
             if (s.gatt != null) {
@@ -283,6 +330,14 @@ public final class BluetoothActivity extends Activity {
                 try { s.gatt.close(); } catch (RuntimeException ignored) { }
             }
         }
+    }
+    private void release(String id) {
+        Runnable retry = retries.remove(id);
+        if (retry != null) main.removeCallbacks(retry);
+        budgets.remove(id);
+        queue.remove(id);
+        requested.remove(id);
+        closeSession(id);
     }
     private void closeAll() {
         for (String id : queue.ids()) release(id);
@@ -308,7 +363,7 @@ public final class BluetoothActivity extends Activity {
     private void render() {
         StringBuilder out = new StringBuilder(getString(R.string.bt_summary,
                 queue.count(LinkQueue.State.READY), queue.count(LinkQueue.State.OPENING),
-                queue.count(LinkQueue.State.QUEUED)));
+                queue.count(LinkQueue.State.QUEUED), queue.count(LinkQueue.State.BACKOFF)));
         for (String id : queue.ids()) {
             Session s = sessions.get(id);
             LinkQueue.State state = queue.state(id);
@@ -317,7 +372,8 @@ public final class BluetoothActivity extends Activity {
             catch (RuntimeException ex) { name = getString(R.string.bt_unnamed); }
             out.append('\n').append(name).append(" — ");
             if (state == LinkQueue.State.READY && s != null) out.append(getString(R.string.bt_services, s.services));
-            else out.append(getString(state == LinkQueue.State.OPENING ? R.string.bt_opening : R.string.bt_queued));
+            else out.append(getString(state == LinkQueue.State.OPENING ? R.string.bt_opening :
+                    state == LinkQueue.State.BACKOFF ? R.string.bt_retry_wait : R.string.bt_queued));
         }
         links.setText(out.toString());
     }
