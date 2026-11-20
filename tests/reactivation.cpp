@@ -40,6 +40,43 @@ static std::optional<Enrollment> LoadFixture(const fs::path& file) {
     return record;
 }
 
+static ReactivationSession::Clock::time_point fake_now{};
+static ReactivationSession::Clock::time_point FakeNow() noexcept { return fake_now; }
+
+static void CheckSessionLimits(EVP_PKEY* key, const Bytes32& device, const Enrollment& record) {
+    using Session = ReactivationSession;
+    Session s(device, record, &FakeNow);
+    auto nonce = s.Begin().value();
+    auto proof = Sign(key, device, nonce);
+    fake_now += Session::kChallengeLifetime;
+    Require(!s.Consume(proof), "expired challenge accepted");
+    nonce = s.Begin().value();
+    proof = Sign(key, device, nonce);
+    s.Cancel();
+    Require(!s.Consume(proof), "cancelled challenge accepted");
+    nonce = s.Begin().value();
+    auto bad = Sign(key, device, nonce);
+    bad[0] ^= 1;
+    for (unsigned i = 0; i < Session::kFailureLimit; ++i) {
+        Require(s.Begin().has_value(), "early cooldown");
+        Require(!s.Consume(bad), "invalid signature accepted");
+    }
+    s.Cancel();
+    Require(!s.Begin(), "rotation/cancellation bypassed cooldown");
+    Require(!s.Consume(proof), "proof accepted during cooldown");
+    fake_now += Session::kCooldown - std::chrono::seconds(1);
+    Require(!s.Begin(), "cooldown ended early");
+    fake_now += std::chrono::seconds(1);
+    nonce = s.Begin().value();
+    proof = Sign(key, device, nonce);
+    Require(s.Consume(proof), "valid proof rejected after cooldown");
+    Require(!s.Consume(proof), "post-cooldown replay accepted");
+    nonce = s.Begin().value();
+    proof = Sign(key, device, nonce);
+    fake_now -= std::chrono::seconds(1);
+    Require(!s.Consume(proof), "clock regression accepted");
+}
+
 int main(int argc, char** argv) {
     Require(argc == 2, "supply fresh fixture directory");
     fs::path root(argv[1]);
@@ -82,9 +119,10 @@ int main(int argc, char** argv) {
     Require(grants == 1 && !setup.Consume(proof), "expected exactly one grant");
     Bytes32 other_device{};
     Require(!ReactivationSession(other_device, LoadFixture(file)).Begin(), "wrong device accepted");
+    CheckSessionLimits(key.get(), device, LoadFixture(file).value());
     fs::resize_file(file, 1);
     Require(!ReactivationSession(device, LoadFixture(file)).Begin(), "truncated record accepted");
     fs::remove(file);
     Require(!ReactivationSession(device, LoadFixture(file)).Begin(), "missing record accepted");
-    std::cout << "Reset fixture, device binding, rotation, restart and concurrent replay checks passed\n";
+    std::cout << "Reset fixture, device binding, rotation, restart and concurrent replay, expiry, cancellation and throttling checks passed\n";
 }
