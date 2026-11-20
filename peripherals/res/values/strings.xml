@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    English is the complete fallback for every locale. Add translations as
+    res/values-<locale>/strings.xml; any missing key falls back to this file.
+    Keep placeholders positional (%1$s) so translators can reorder them.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Launcher and window title for the app that previews external cameras and shows connectivity routes. -->
+    <string name="app_name">External devices</string>
+
+    <!-- Heading above the default data route status. -->
+    <string name="route_heading">Data connection</string>
+    <!-- Status: Android reports no default data network. -->
+    <string name="route_none">No default data connection reported.</string>
+    <!-- Status: Android reports the default data network uses a satellite transport. This states only what the OS reports, not that messaging works. -->
+    <string name="route_satellite">Android reports a satellite transport on the default data connection.</string>
+    <!-- Status: the default data network exists but is not reported as satellite. -->
+    <string name="route_not_satellite">The default data connection does not report a satellite transport.</string>
+
+    <!-- Heading above the external camera controls. -->
+    <string name="camera_heading">External camera</string>
+    <!-- Initial hint. "Webcam mode" is the USB video class (UVC) mode many cameras and capture adapters offer. -->
+    <string name="camera_prompt">Connect an external camera in webcam mode.</string>
+    <!-- Button that starts a live preview from an external (USB) camera. -->
+    <string name="preview_button">Preview external camera</string>
+    <!-- Accessibility description for the live camera preview area. -->
+    <string name="preview_description">External camera preview</string>
+    <!-- Shown when the user denies the camera permission. -->
+    <string name="permission_needed">Camera access is needed for a preview.</string>
+    <!-- Shown when the preview area is not ready to receive video. -->
+    <string name="surface_unavailable">Preview surface unavailable. Try again when visible.</string>
+    <!-- Shown when the phone exposes no external camera. -->
+    <string name="no_external_camera">No external preview camera exposed by this phone. Check webcam mode and USB host support.</string>
+    <!-- Title of a dialog listing several connected external cameras. -->
+    <string name="choose_camera">Choose camera</string>
+    <!-- Item in the camera picker. The placeholder is a system camera identifier such as "3"; it is not translatable text. -->
+    <string name="external_camera_label">External camera <xliff:g id="camera_id" example="3">%1$s</xliff:g></string>
+    <!-- Error when the camera list cannot be read. -->
+    <string name="list_failed">Could not list external cameras.</string>
+    <!-- Error when the camera offers no preview resolutions. -->
+    <string name="no_preview_sizes">Camera has no supported preview sizes.</string>
+    <!-- Progress message while the camera opens. -->
+    <string name="opening">Opening external camera…</string>
+    <!-- Shown when the camera is unplugged or disconnected. -->
+    <string name="disconnected">External camera disconnected.</string>
+    <!-- Error with a numeric Android camera error code. -->
+    <string name="camera_error">Camera unavailable (error <xliff:g id="code" example="3">%1$d</xliff:g>).</string>
+    <!-- Error when opening the camera fails. -->
+    <string name="open_failed">Could not open the external camera.</string>
+    <!-- Error when the video stream does not start. -->
+    <string name="stream_failed">External camera stream could not start.</string>
+    <!-- Error when the camera rejects the requested preview format. -->
+    <string name="config_rejected">Camera rejected the preview configuration.</string>
+    <!-- Error when the preview session cannot be set up. -->
+    <string name="configure_failed">Could not configure the external camera.</string>
+    <!-- Status when live preview is running. -->
+    <string name="preview_started">External camera preview started.</string>
+    <!-- Status after the app leaves the foreground and the camera is released. -->
+    <string name="preview_stopped">Preview stopped.</string>
+</resources>

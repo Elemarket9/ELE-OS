@@ -31,6 +31,11 @@ adb shell getprop sys.boot_completed
 adb shell /product/bin/ele-status
 ```
 
+Status: no ELE-OS image has been built or booted yet. The 2026-11-20
+attempt ran on a host without KVM and with 8 GB RAM; see
+[docs/evidence/2026-11-20-boot-attempt.md](docs/evidence/2026-11-20-boot-attempt.md)
+for the host requirements and exact commands to run on a capable machine.
+
 A successful boot reports `1` for `sys.boot_completed`. The snapshot should
 report `product=ele_os_cf_x86_64`. Run the same workload on stock Cuttlefish
 before drawing performance conclusions.
@@ -110,3 +115,33 @@ and a participating network. Live device, camera and carrier validation is
 pending. For comparison with stock firmware, record preview startup latency,
 frame drops, unplug/reconnect behavior, and satellite message delivery receipts
 on matching hardware and service plans.
+
+### Languages, right-to-left layouts and large text
+
+All user-visible text in the External devices app lives in
+`peripherals/res/values/strings.xml`. English is the complete fallback: a
+locale with no translation shows English, while layout direction still follows
+the locale. Translations go in `res/values-<locale>/strings.xml` and need
+review by a fluent speaker. None are shipped yet. The layout uses only
+start/end attributes, the manifest sets `android:supportsRtl`, camera IDs are
+bidi-isolated inside sentences, and the content scrolls so large font scales
+never squeeze the preview, which keeps the camera stream's aspect ratio.
+
+Two checks run without AOSP. They need an Android SDK with
+`platforms;android-36` and build-tools, plus JDK 17 or newer:
+
+```sh
+export ANDROID_HOME=/path/to/sdk
+sh tests/peripherals-sdk.sh            # aapt2 + javac -Werror + d8 + apksigner
+(cd peripherals/robolectric && ./gradlew testDebugUnitTest)
+```
+
+The first builds and signs a test APK, and confirms that every string exists
+in the default locale and in the en-XA (long accented text) and ar-XB
+(right-to-left) pseudolocales. The second runs Robolectric with native
+graphics on Android 16 (SDK 36) and measures real text layout. It covers
+English, mirroring in ar-XB and untranslated Persian, fallback in untranslated
+Swahili, and en-XA at 2× font scale on a 320×480 dp screen with no clipped or
+ellipsized text. Robolectric is not a device. Rendering on Cuttlefish and on
+handsets, TalkBack and system font differences still need checking there.
+`tests/run.sh` runs the SDK check when `ANDROID_HOME` is set.
