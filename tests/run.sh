@@ -13,3 +13,4 @@ mkdir "$tmp/fixture"
 "$tmp/session" "$tmp/fixture"
 sh tests/status.sh
 sh tests/ota.sh
+sh tests/ota_client.sh

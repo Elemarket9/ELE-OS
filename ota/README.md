@@ -37,7 +37,24 @@ printf 'fixture\n' > /tmp/payload
 
 The command writes `metadata.txt`, `metadata.sig`, and `payload`. The stdout line `status=signed-prototype` means the fixture was signed. It does not mean an image was built or flashed.
 
-`sh tests/ota.sh` builds the tool, signs both targets, refuses a different key, and runs the library checks. `m libele_ota` has not been run. The Soong module is `libele_ota` in `ota/Android.bp`.
+`sh tests/ota.sh` builds the tool, signs both targets, refuses a different key, and runs the library checks.
+
+## Check a local channel
+
+`ele-ota-client` reads a directory of package folders. It verifies the test-key signature and the payload hash, then prints a decision. The status for a package it accepts is `verified-not-installed`.
+
+```sh
+c++ -std=c++17 -Wall -Wextra -Werror -Iota ota/metadata.cpp ota/client.cpp ota/client_main.cpp -lcrypto -o /tmp/ele-ota-client
+/tmp/ele-ota-client \
+  --channel /tmp/channel/cuttlefish \
+  --target cuttlefish \
+  --product ele_os_cf_x86_64 \
+  --current-version 0
+```
+
+The client accepts the pinned test public key only. It does not open a network connection. `sh tests/ota_client.sh` covers a newer package, a downgrade, a bad signature, a payload byte change, an ambiguous version, and both targets.
+
+`m libele_ota` has not been run. The Soong module is `libele_ota` in `ota/Android.bp`.
 
 Package bytes are described in [format.md](format.md). The key is described in [keys/test/README.md](keys/test/README.md).
 

@@ -1,6 +1,9 @@
 cc_library_static {
     name: "libele_ota",
-    srcs: ["metadata.cpp"],
+    srcs: [
+        "metadata.cpp",
+        "client.cpp",
+    ],
     cpp_std: "c++17",
     export_include_dirs: ["."],
     shared_libs: ["libcrypto"],
