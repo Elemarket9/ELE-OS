@@ -100,8 +100,11 @@ There is no Google speech or Gemini backend. A flagship gets a full local
 model. A low-RAM phone gets a smaller local model or, if the owner opts in,
 a cloud model. No quality or speed number is claimed: the model, the speech
 engines, and the system share the phone's RAM, and a vendor NPU is not a
-backend we have shown works. Faith is not in this tree yet. The default
-model, the wake-word engine, and the cloud policy are still open.
+backend we have shown works. A host prototype of the text service is in
+[faith/](faith/README.md). It is not installed in the Cuttlefish image and
+it has not booted on a GSI. No model weights are in the tree. Speech and
+the wake phrase are not in that package. The default model, the wake-word
+engine, and the cloud policy are still open.
 
 ### Old and low-end phones stay in use
 
@@ -157,10 +160,10 @@ This git repository is a device overlay. In an AOSP tree it is checked out at
 | `ele-status` | In the default image. Local shell snapshot of product name, fingerprint, two patch dates, verified-boot properties, and a memory reading. Not attestation and not proof that patches are complete. |
 | `libele_owner_proof` | Ed25519 check and a one-time challenge session. Host tests only. No device enforces it. |
 | External devices app | Optional experiment in the tree. Camera2 preview of external cameras, and a line about whether the default network reports a satellite transport. Not in the default image, not on the core roadmap, not validated on hardware. |
-| Faith | The built-in assistant. Named, not started. No model, no speech engine, and no package in this repository. Default wake phrase "Hey Faith", which the owner can change. |
+| Faith | Host prototype of the text service and permission gate, in `faith/`. Not in the Cuttlefish image, not booted on a GSI, no model weights, no speech engine, and no wake-word engine. Default wake phrase remains "Hey Faith", which the owner can change. |
 
-Lost-device recovery, OTA delivery, the network toggle, TalkBack, Faith, and
-the Treble GSI are future work. Phones are added later through the
+Lost-device recovery, OTA delivery, the network toggle, TalkBack, a
+Cuttlefish run of Faith, and the Treble GSI are future work. Phones are added later through the
 [onboarding kit](docs/device-support.md). The roadmap says how each piece is
 measured before anyone calls it done.
 

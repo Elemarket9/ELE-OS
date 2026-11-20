@@ -1,0 +1,20 @@
+// SPDX-License-Identifier: Apache-2.0
+// Host-tested prototype. Not added to PRODUCT_PACKAGES.
+// The Cuttlefish product makefile and the future Treble GSI product
+// are left unchanged by this module.
+
+cc_library_static {
+    name: "libele_faith",
+    srcs: ["src/faith.cpp"],
+    cpp_std: "c++17",
+    local_include_dirs: ["."],
+    export_include_dirs: ["."],
+}
+
+cc_binary {
+    name: "faith-text",
+    srcs: ["src/faith_text.cpp"],
+    cpp_std: "c++17",
+    local_include_dirs: ["."],
+    static_libs: ["libele_faith"],
+}
