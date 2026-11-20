@@ -51,3 +51,22 @@ channel/ele_os_gsi_arm64/<package-id>/
 ```
 
 The two targets share this format. Cuttlefish is the virtual device built from `ele_os_cf_x86_64.mk`. A Treble GSI package, when a real payload exists later, is a system image. The device vendor image already on a Treble phone stays in place. This prototype does not read a phone bootloader or a phone vendor partition.
+
+## Client decision
+
+`ele-ota-client` reads one local channel directory. It writes this text and does not copy the payload anywhere else:
+
+```text
+ELE-OS-UPDATE-DECISION/1
+current-version=<installed version, 0 when none is recorded>
+installed=no
+package=<package-id or ->
+product=<product>
+reason=<token>
+rejected=<package-ids or ->
+status=verified-not-installed|no-update|rejected
+target=<target>
+version-code=<version or ->
+```
+
+`verified-not-installed` means the newest matching package verified with the test key and its payload hash matched. The client stops there. `no-update` means nothing newer verified. `rejected` means a matching package failed verification, a package directory was unreadable, or two packages shared the winning version. A rejected newest package is not replaced by an older one.

@@ -28,3 +28,4 @@ for host_test in tests/host-*.sh; do
     [ -f "$host_test" ] || continue
     sh "$host_test"
 done
+sh tests/ota_client.sh

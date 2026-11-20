@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -86,9 +87,9 @@ bool IsAospReleaseTag(const std::string& text) {
 }
 
 std::string ProductFor(const std::string& target) {
-    if (target == "cuttlefish") return "ele_os_cf_x86_64";
-    if (target == "treble-gsi") return "ele_os_gsi_arm64";
-    return "";
+    std::string product;
+    if (!TargetProduct(target, product)) return "";
+    return product;
 }
 
 std::string PayloadKindFor(const std::string& target) {
@@ -121,8 +122,9 @@ bool ReadAll(int fd, uint64_t limit, std::string& out, std::string& error) {
     return true;
 }
 
-bool OpenRegular(const std::string& path, Fd& out, struct stat& st, std::string& error) {
-    int fd = open(path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC);
+bool OpenRegularAt(int parent, const std::string& path, Fd& out, struct stat& st, std::string& error) {
+    // O_NONBLOCK ensures a hostile FIFO cannot hang before fstat rejects it.
+    int fd = openat(parent, path.c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC | O_NONBLOCK);
     if (fd < 0) {
         error = std::string("cannot open ") + path;
         return false;
@@ -134,6 +136,10 @@ bool OpenRegular(const std::string& path, Fd& out, struct stat& st, std::string&
     }
     out = std::move(holder);
     return true;
+}
+
+bool OpenRegular(const std::string& path, Fd& out, struct stat& st, std::string& error) {
+    return OpenRegularAt(AT_FDCWD, path, out, st, error);
 }
 
 bool Assign(Metadata& metadata, const std::string& key, const std::string& value) {
@@ -421,10 +427,10 @@ bool BuildPrototype(const std::string& target, const std::string& branch_phase,
     return true;
 }
 
-bool Sha256File(const std::string& path, std::string& hex, uint64_t& size, std::string& error) {
+static bool Sha256FileAt(int parent, const std::string& path, std::string& hex, uint64_t& size, std::string& error) {
     struct stat st {};
     Fd fd(-1);
-    if (!OpenRegular(path, fd, st, error)) return false;
+    if (!OpenRegularAt(parent, path, fd, st, error)) return false;
     if (st.st_size <= 0 || static_cast<uint64_t>(st.st_size) > kMaxPrototypePayload) {
         error = "prototype payload limit is 1048576 bytes";
         return false;
@@ -437,7 +443,8 @@ bool Sha256File(const std::string& path, std::string& hex, uint64_t& size, std::
     uint64_t hashed = 0;
     char buffer[8192];
     while (hashed < static_cast<uint64_t>(st.st_size)) {
-        ssize_t n = read(fd.value, buffer, sizeof(buffer));
+        const auto count = std::min<uint64_t>(sizeof(buffer), static_cast<uint64_t>(st.st_size) - hashed);
+        ssize_t n = read(fd.value, buffer, static_cast<size_t>(count));
         if (n < 0) {
             error = "payload read failed";
             return false;
@@ -449,7 +456,10 @@ bool Sha256File(const std::string& path, std::string& hex, uint64_t& size, std::
         }
         hashed += static_cast<uint64_t>(n);
     }
-    if (hashed != static_cast<uint64_t>(st.st_size)) {
+    char extra = 0;
+    struct stat final_st {};
+    if (hashed != static_cast<uint64_t>(st.st_size) || read(fd.value, &extra, 1) != 0 ||
+        fstat(fd.value, &final_st) != 0 || final_st.st_size != st.st_size) {
         error = "payload size changed while hashing";
         return false;
     }
@@ -462,6 +472,10 @@ bool Sha256File(const std::string& path, std::string& hex, uint64_t& size, std::
     hex = HexEncode(digest, length);
     size = hashed;
     return true;
+}
+
+bool Sha256File(const std::string& path, std::string& hex, uint64_t& size, std::string& error) {
+    return Sha256FileAt(AT_FDCWD, path, hex, size, error);
 }
 
 bool SignCanonical(EVP_PKEY* key, const std::string& canonical, std::array<uint8_t, 64>& signature,
@@ -514,22 +528,16 @@ bool VerifySignature(const std::string& canonical, const std::array<uint8_t, 32>
                             reinterpret_cast<const uint8_t*>(canonical.data()), canonical.size()) == 1;
 }
 
-bool LoadPackage(const std::string& directory, CheckedPackage& out, std::string& error) {
-    int dirfd = open(directory.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
-    if (dirfd < 0) {
-        error = "package directory is not a real directory";
-        return false;
-    }
-    close(dirfd);
+static bool LoadPackageFromFd(int dirfd, CheckedPackage& out, std::string& error) {
     struct stat st {};
     Fd meta_fd(-1);
-    if (!OpenRegular(directory + "/metadata.txt", meta_fd, st, error)) return false;
+    if (!OpenRegularAt(dirfd, "metadata.txt", meta_fd, st, error)) return false;
     std::string raw;
     if (!ReadAll(meta_fd.value, kMaxMetadataBytes, raw, error)) return false;
     Metadata metadata;
     if (!Parse(raw, metadata, error)) return false;
     Fd sig_fd(-1);
-    if (!OpenRegular(directory + "/metadata.sig", sig_fd, st, error)) return false;
+    if (!OpenRegularAt(dirfd, "metadata.sig", sig_fd, st, error)) return false;
     if (st.st_size != 64) {
         error = "metadata signature must be 64 bytes";
         return false;
@@ -544,9 +552,14 @@ bool LoadPackage(const std::string& directory, CheckedPackage& out, std::string&
         }
         got += static_cast<size_t>(n);
     }
+    char extra = 0;
+    if (read(sig_fd.value, &extra, 1) != 0) {
+        error = "metadata signature length changed";
+        return false;
+    }
     std::string hex;
     uint64_t size = 0;
-    if (!Sha256File(directory + "/payload", hex, size, error)) return false;
+    if (!Sha256FileAt(dirfd, "payload", hex, size, error)) return false;
     if (hex != metadata.payload_sha256 || std::to_string(size) != metadata.payload_size) {
         error = "payload hash does not match metadata";
         return false;
@@ -555,6 +568,29 @@ bool LoadPackage(const std::string& directory, CheckedPackage& out, std::string&
     out.canonical = std::move(raw);
     out.signature = signature;
     return true;
+}
+
+bool LoadPackage(const std::string& directory, CheckedPackage& out, std::string& error) {
+    Fd dir(open(directory.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
+    if (dir.value < 0) {
+        error = "package directory is not a real directory";
+        return false;
+    }
+    return LoadPackageFromFd(dir.value, out, error);
+}
+
+bool LoadPackageAt(int parent, const std::string& name, CheckedPackage& out, std::string& error) {
+    if (name.empty() || name == "." || name == ".." || name.find('/') != std::string::npos ||
+        name.find('\0') != std::string::npos) {
+        error = "invalid package directory name";
+        return false;
+    }
+    Fd dir(openat(parent, name.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
+    if (dir.value < 0) {
+        error = "package directory is not a real directory";
+        return false;
+    }
+    return LoadPackageFromFd(dir.value, out, error);
 }
 
 bool WritePackage(const std::string& out_dir, const std::string& payload_path, const Metadata& metadata,
@@ -583,11 +619,13 @@ bool WritePackage(const std::string& out_dir, const std::string& payload_path, c
     close(sig);
     struct stat st {};
     Fd source(-1);
-    if (ok && OpenRegular(payload_path, source, st, error)) {
+    if (ok && OpenRegular(payload_path, source, st, error) && st.st_size > 0 &&
+        static_cast<uint64_t>(st.st_size) <= kMaxPrototypePayload) {
         char buffer[8192];
         uint64_t left = static_cast<uint64_t>(st.st_size);
         while (ok && left > 0) {
-            ssize_t n = read(source.value, buffer, sizeof(buffer));
+            const auto count = std::min<uint64_t>(sizeof(buffer), left);
+            ssize_t n = read(source.value, buffer, static_cast<size_t>(count));
             if (n <= 0) {
                 ok = false;
                 break;
