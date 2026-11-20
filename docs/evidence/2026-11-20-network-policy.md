@@ -1,13 +1,14 @@
 # 2026-11-20 network policy
 
-Code under test: `7a71b04` (`Add a per-app network on/off control`). This
-note was written after that run. It does not change the code the tests
-compiled.
+Code under test: `04ee014` (`Add a per-app network on/off control`), rebased
+onto main `4076222f`. This note was written after that run. It does not
+change the code the tests compiled.
 
 Command:
 
 ```sh
 CXX=g++ sh tests/run.sh
+sh tests/check-build-contract.sh
 ```
 
 Host:
@@ -23,6 +24,7 @@ Reset fixture, device binding, rotation, restart and concurrent replay checks pa
 Host snapshot checks passed
 Network policy checks passed (59)
 Network product wiring checks passed
+Build contract checks passed (manifest and makefiles only; AOSP was not built)
 ```
 
 The network portion checks the on/off choice: missing entries stay granted,
