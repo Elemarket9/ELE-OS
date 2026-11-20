@@ -11,4 +11,9 @@ cxx=${CXX:-c++}
     tests/reactivation.cpp -lcrypto -o "$tmp/session"
 mkdir "$tmp/fixture"
 "$tmp/session" "$tmp/fixture"
+"$cxx" -std=c++17 -Wall -Wextra -Werror -pthread -Iactivation \
+    activation/owner_proof.cpp activation/reactivation_session.cpp \
+    activation/owner_record.cpp activation/theft_lock.cpp \
+    tests/owner_record.cpp -lcrypto -o "$tmp/record"
+"$tmp/record"
 sh tests/status.sh
