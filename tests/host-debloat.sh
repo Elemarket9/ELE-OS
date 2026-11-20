@@ -69,6 +69,7 @@ fi
 
 # Whole token only, so a short module name such as Maps does not match
 # inside an unrelated identifier. The list file is not a source file.
+# check-build-contract.sh names the same modules in its reject pattern.
 hits=$(mktemp)
 names=${TMPDIR:-/tmp}/ele-os-debloat-names
 trap 'rm -f "$hits" "$names"' EXIT
@@ -78,6 +79,7 @@ find . -type f \
        -o -name '*.sh' -o -name '*.cpp' -o -name '*.h' \) \
     ! -path './products/debloat.mk' \
     ! -path './tests/host-debloat.sh' \
+    ! -path './tests/check-build-contract.sh' \
     -print0 |
     xargs -0 grep -n -E "(^|[^A-Za-z0-9_])(${pattern})([^A-Za-z0-9_]|$)" >"$hits" || true
 
