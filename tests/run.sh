@@ -12,3 +12,4 @@ cxx=${CXX:-c++}
 mkdir "$tmp/fixture"
 "$tmp/session" "$tmp/fixture"
 sh tests/status.sh
+sh tests/talkback.sh

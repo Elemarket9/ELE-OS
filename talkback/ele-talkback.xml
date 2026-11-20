@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Local manifest for an AOSP workspace. Copy this file to
+  .repo/local_manifests/ele-talkback.xml and run repo sync.
+  The revision matches talkback/PIN. SPDX-License-Identifier: Apache-2.0
+-->
+<manifest>
+  <remote name="github" fetch="https://github.com" />
+  <project
+      path="external/talkback"
+      name="google/talkback"
+      remote="github"
+      revision="229212fdf5842191d0a93fc95d9ca1423b346866" />
+</manifest>

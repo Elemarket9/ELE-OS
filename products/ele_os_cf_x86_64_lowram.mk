@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Low-RAM virtual phone. Prototype makefile: no image has been built or booted.
+# The screen reader stays inherited from the Cuttlefish product. This is not
+# a published install image.
+
+$(call inherit-product, device/ele/os/products/ele_os_cf_x86_64.mk)
+
+PRODUCT_NAME := ele_os_cf_x86_64_lowram
+PRODUCT_MODEL := ELE-OS Virtual Phone, low-RAM prototype
+PRODUCT_PRODUCT_PROPERTIES += ro.config.low_ram=true

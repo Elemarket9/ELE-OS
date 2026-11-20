@@ -1,0 +1,5 @@
+# Checkout created by talkback/sync-pin.sh. The upstream tree is not vendored.
+/talkback/upstream/
+
+# Built outside git, and only after the license gate in talkback/README.md.
+/talkback/EleTalkBack.apk
