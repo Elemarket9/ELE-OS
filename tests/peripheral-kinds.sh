@@ -9,3 +9,5 @@ javac -Xlint:all -Werror -d "$tmp" peripherals/src/org/eleos/peripherals/LinkQue
 java -cp "$tmp" org.eleos.peripherals.LinkQueueTest
 javac -Xlint:all -Werror -d "$tmp" peripherals/src/org/eleos/peripherals/LinkRate.java tests/LinkRateTest.java
 java -cp "$tmp" org.eleos.peripherals.LinkRateTest
+javac -Xlint:all -Werror -d "$tmp" peripherals/src/org/eleos/peripherals/PowerAdmission.java tests/PowerAdmissionTest.java
+java -cp "$tmp" org.eleos.peripherals.PowerAdmissionTest

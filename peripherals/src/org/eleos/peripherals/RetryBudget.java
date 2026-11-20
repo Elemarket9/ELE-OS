@@ -4,6 +4,7 @@ package org.eleos.peripherals;
  * Delay is exponentially bounded with up to 250ms deterministic peer jitter. */
 final class RetryBudget {
     private int attempts;
+    boolean hasRetried() { return attempts != 0; }
     long nextDelay(int entropy) {
         if (attempts >= 3) return -1;
         long base = 1000L << attempts++;
