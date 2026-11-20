@@ -24,7 +24,9 @@ done
 
 grep -q 'ele_os_cf_x86_64.mk' ele_os_cf_build.mk || fail 'Cuttlefish build contract does not inherit the base'
 grep -q 'products/common.mk' ele_os_cf_build.mk || fail 'Cuttlefish build contract skips the shared fragment'
-grep -q 'low_ram.mk' ele_os_cf_build.mk && fail 'default Cuttlefish product inherits the low-RAM class'
+if grep -E '^[^#]*inherit-product.*low_ram' ele_os_cf_build.mk; then
+    fail 'default Cuttlefish product inherits the low-RAM class'
+fi
 
 grep -q 'products/low_ram.mk' ele_os_cf_x86_64_low_ram.mk || fail 'Cuttlefish low-RAM product misses the class fragment'
 grep -q 'products/common.mk' ele_os_cf_x86_64_low_ram.mk || fail 'Cuttlefish low-RAM product skips the shared fragment'

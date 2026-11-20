@@ -153,14 +153,15 @@ This git repository is a device overlay. In an AOSP tree it is checked out at
 | Piece | State |
 | --- | --- |
 | Cuttlefish product `ele_os_cf_x86_64` | Shared development target until it actually boots. Makefile registered. Image not built or booted in this repository. Signed with upstream public test-keys. |
-| Treble GSI | The hardware image for many Treble-compliant phones. Not built yet. No phone maker is a partner. A GSI leaves the vendor image, kernel, and firmware on the phone. |
+| Treble GSI `ele_os_gsi_arm64` | Hardware image for many Treble-compliant phones. Makefile registered. Not built or booted. No phone maker is a partner. A GSI leaves the vendor image, kernel, and firmware on the phone. |
+| Low-RAM class | `ele_os_cf_x86_64_low_ram` and `ele_os_gsi_low_ram_arm64` set `ro.config.low_ram`. Not built. Not a measured savings. The default Cuttlefish product and the plain GSI do not set it. |
 | `ele-status` | In the default image. Local shell snapshot of product name, fingerprint, two patch dates, verified-boot properties, and a memory reading. Not attestation and not proof that patches are complete. |
 | `libele_owner_proof` | Ed25519 check and a one-time challenge session. Host tests only. No device enforces it. |
 | External devices app | Optional experiment in the tree. Camera2 preview of external cameras, and a line about whether the default network reports a satellite transport. Not in the default image, not on the core roadmap, not validated on hardware. |
 | Faith | The built-in assistant. Named, not started. No model, no speech engine, and no package in this repository. Default wake phrase "Hey Faith", which the owner can change. |
 
 Lost-device recovery, OTA delivery, the network toggle, TalkBack, Faith, and
-the Treble GSI are future work. Phones are added later through the
+a boot of the Treble GSI are future work. Phones are added later through the
 [onboarding kit](docs/device-support.md). The roadmap says how each piece is
 measured before anyone calls it done.
 

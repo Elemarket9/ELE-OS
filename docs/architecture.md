@@ -45,10 +45,10 @@ source.
 
 ELE-OS has no phone partner and does not pick a first handset. The hardware
 image is a Treble GSI, so the same system image can boot on many
-Treble-compliant phones. That product is not registered in this tree yet.
-The intended lunch target is `ele_os_gsi_arm64`, built from the AOSP generic
-system image plus the ELE-OS packages. `arm` is added only if a porter shows
-a device that needs it.
+Treble-compliant phones. The lunch target is `ele_os_gsi_arm64`, built from
+the AOSP generic system image plus the ELE-OS packages. The makefile is
+registered. The image has not been built or booted. `arm` is added only if a
+porter shows a device that needs it.
 
 A phone maker or a porter who wants a maintained device, vendor updates, or
 Tier 3 follows the onboarding kit in [device-support.md](device-support.md).
@@ -65,18 +65,25 @@ advance.
 
 ## Repository and system components
 
-This repository is the overlay at `device/ele/os`. It registers one virtual
-product:
+This repository is the overlay at `device/ele/os`. It registers Cuttlefish,
+an arm64 Treble GSI, and a low-RAM class of each. No phone is named.
 
 - `AndroidProducts.mk` registers `ele_os_cf_build.mk`, which inherits
-  `ele_os_cf_x86_64.mk`. The lunch target is
+  `ele_os_cf_x86_64.mk`, plus the low-RAM Cuttlefish product and both arm64
+  GSI products. Every lunch combo uses `aosp_current`. The default one is
   `ele_os_cf_x86_64-aosp_current-userdebug`. `android-16.0.0_r1` has no
   `trunk_staging` release config; `aosp_current` is the alias that tag maps
   to `bp2a`. `lunch` has not been run.
 - `ele_os_cf_x86_64.mk` inherits
   `device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk` and adds
   `ele-status` to the default image. `ElePeripherals` stays in the tree and
-  is not installed unless a local build adds it.
+  is not installed unless a local build adds it. `ele_os_cf_build.mk` keeps
+  that product name, labels the image as a test-key prototype, and does not
+  set the low-RAM switch.
+- `ele_os_gsi_arm64.mk` inherits AOSP's arm64 generic system image and
+  `gsi_release.mk`. The low-RAM products inherit `products/low_ram.mk`,
+  which sets `ro.config.low_ram=true`. That is AOSP's switch. It is not a
+  measured savings, and those images have not been built.
 - The image, when someone builds it, is signed with AOSP's public test-keys.
   Those keys are published in the AOSP tree. They are acceptable for a
   virtual development build and unacceptable for a phone offered to anyone
@@ -131,7 +138,7 @@ These names describe jobs. They are not packages in the tree.
 
 | Job | Role | Feasibility |
 | --- | --- | --- |
-| Product config per device class | Which packages and `ro.config.low_ram` settings a build gets | The virtual product has neither a lean package list nor `low_ram` set. Flagship and low-RAM configs must be different products. |
+| Product config per device class | Which packages and `ro.config.low_ram` settings a build gets | The default Cuttlefish product and `ele_os_gsi_arm64` do not set `low_ram`. `ele_os_cf_x86_64_low_ram` and `ele_os_gsi_low_ram_arm64` do. None of those images has been built. |
 | Update client | Apply a signed OTA with AOSP `update_engine` or recovery | Depends on A/B, virtual A/B, or non-A/B layout. All three exist in the phone market. |
 | Release signer | Offline signing of target files, APEXes, and OTA packages | Procedure decided below. Keys do not exist yet and must not be committed. CI uses test-keys only. |
 | Owner record | Device id plus owner Ed25519 public key, stored so a userdata wipe does not delete it | Only on devices that have such storage and a bootloader that will not casually erase it. |
@@ -583,7 +590,7 @@ Levers that are real, and the class they belong to:
 | Do not start services this project does not need | Every class | Each removed package needs a reason, and the accessibility checklist has to pass afterward. |
 | Our own daemons, including a recovery check-in | Every class | A locate client that wakes the radio is an efficiency regression until its cost is measured. Default is off. |
 | Faith's model and wake phrase | Every class, different weights | Both stay off until the owner enables them. The suggested phrase is "Hey Faith", and the owner can change it. Resident set is measured per class before a model becomes the default. A 2–3 GB phone may be unable to keep a flagship-sized model loaded. |
-| `ro.config.low_ram` | Low-RAM products only | AOSP's [`lmkd`](https://source.android.com/docs/core/perf/lmkd) uses this property to distinguish low-RAM behavior from high-performance behavior. Setting it on a flagship product changes kill behavior and is not the default. The Cuttlefish product does not set it today. |
+| `ro.config.low_ram` | Low-RAM products only | AOSP's [`lmkd`](https://source.android.com/docs/core/perf/lmkd) uses this property to distinguish low-RAM behavior from high-performance behavior. Setting it on a flagship product changes kill behavior and is not the default. The default Cuttlefish product and the plain GSI do not set it. The low-RAM products set it and do not replace lmkd's own numeric defaults. No paired run exists. |
 | zram and similar kernel swap compression | Where the kernel we boot supports it | Common on low-RAM Android products. Adopting it is a measured change per device, not a flag in this overlay. |
 | Android Go configuration | Reference for the low-RAM pillar | Google's configuration, trademark, and certification. We may reuse the same kind of AOSP flags. We do not claim a Go device. |
 

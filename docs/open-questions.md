@@ -26,7 +26,7 @@ settings from a pull request.
 phone. There is no phone partner. Cuttlefish (`ele_os_cf_x86_64`) is the
 shared development target until a boot is recorded, and it stays the place
 shared components are proven. The hardware image is a Treble GSI
-(`ele_os_gsi_arm64`, not in the tree yet) so one system build can boot on
+(`ele_os_gsi_arm64`, makefile registered, image not built) so one system build can boot on
 many Treble-compliant phones. A phone maker or a porter adds a specific
 device later by following the onboarding kit in
 [device-support.md](device-support.md).

@@ -139,6 +139,14 @@ release config map aliases `aosp_current` to `bp2a` and does not define
 `trunk_staging`. `lunch` has not been run. Moving the pin is a separate
 change, and the combo has to name a release config that pin declares.
 
+The same file also registers `ele_os_cf_x86_64_low_ram-aosp_current-userdebug`,
+`ele_os_gsi_arm64-aosp_current-userdebug`, and
+`ele_os_gsi_low_ram_arm64-aosp_current-userdebug`. None of those images has
+been built here.
+The two low-RAM targets set `ro.config.low_ram`. The plain GSI and the
+default Cuttlefish target do not. This page does not give a GSI flash
+command until a boot transcript exists.
+
 ### Keys
 
 The repository owner generates production release keys on an offline machine
