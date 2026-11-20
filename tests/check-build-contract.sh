@@ -90,7 +90,9 @@ grep -q '^PRODUCT_DEVICE := vsoc_x86_64_only$' ele_os_cf_x86_64.mk \
 
 # Certificate and package guards apply to makefiles we control. The identity
 # makefile is included so a GMS inherit cannot land there unnoticed.
-for file in ele_os_cf_build.mk AndroidProducts.mk ele_os_cf_x86_64.mk; do
+for file in ele_os_cf_build.mk AndroidProducts.mk ele_os_cf_x86_64.mk \
+    products/ele_os_cf_x86_64_lowram.mk products/ele_os_gsi_arm64.mk \
+    products/ele_os_gsi_arm64_lowram.mk talkback/ele_talkback.mk; do
     if grep -E '^[[:space:]]*PRODUCT_DEFAULT_DEV_CERTIFICATE[[:space:]]*[:?+]?=' "$file" \
         | grep -v 'build/make/target/product/security/testkey$' >/dev/null; then
         fail "$file assigns a dev certificate other than the AOSP test key"

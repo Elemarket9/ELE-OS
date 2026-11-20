@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Machine-readable pin for the open-source TalkBack tree.
+# talkback/sync-pin.sh and tests/talkback.sh source this file.
+upstream_url=https://github.com/google/talkback
+revision=229212fdf5842191d0a93fc95d9ca1423b346866
+version_name=TfPu_release_16_2
+spdx=Apache-2.0
+license_sha256=58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd
+license_git_blob=7a4a3ea2424c09fbe48d455aed1eaa94d9124835
+application_id=com.android.talkback
+flavor=phone
