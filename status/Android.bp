@@ -1,0 +1,5 @@
+sh_binary {
+    name: "ele-status",
+    src: "ele-status.sh",
+    product_specific: true,
+}
