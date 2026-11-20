@@ -140,7 +140,7 @@ def build(source, output, arch, jobs, cross):
         run("git", "worktree", "add", "--detach", work, PIN["commit"], cwd=source)
         try:
             integrate(work)
-            make = ["make", "-C", work, f"O={obj}", f"ARCH={arch}", "LOCALVERSION="]
+            make = ["make", "-C", work, f"O={obj}", f"ARCH={arch}", f"LOCALVERSION={PIN['localversion']}"]
             if cross:
                 make.append(f"CROSS_COMPILE={cross}")
             run(*make, "defconfig")
