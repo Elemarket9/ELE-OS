@@ -24,4 +24,4 @@ The file fetched is `SmolLM2-135M-Instruct.Q4_K_M.gguf` from `QuantFactory/SmolL
 
 `sh faith/llm/fetch.sh` clones, builds, and downloads into `$XDG_CACHE_HOME/ele-os/faith` (or `~/.cache/ele-os/faith`). `faith/llm/faith-llama.sh` reads a prompt on stdin. If the weight or the binary is missing, it exits. It does not invent a reply. `FAITH_MEMORY_BUDGET_BYTES` refuses to load the file when the file alone is larger than the budget. That comparison is not a resident-set measurement.
 
-No quality score and no tokens-per-second figure are part of this pin.
+No quality score and no tokens-per-second figure are part of this pin. One host run is recorded in [HOST-RUN.md](HOST-RUN.md). It is not a Cuttlefish or GSI result.

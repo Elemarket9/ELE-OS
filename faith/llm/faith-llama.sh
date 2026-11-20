@@ -41,5 +41,4 @@ exec "$bin" \
     --no-display-prompt \
     --simple-io \
     --color off \
-    --log-disable \
     -p "$prompt"
