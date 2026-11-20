@@ -3,9 +3,12 @@
 Prototype only. This is not a Cuttlefish boot, not a GSI boot, and not a
 handset. Nobody listened to the audio. The wake phrase was not detected.
 
-Base of the tree: `4076222f` (`Merge pull request #3`). The commands below
-were run on the working tree that adds the voice prototype, before this note
-was committed. The note does not change those commands.
+The first run of the commands below was on the working tree that adds the
+voice prototype, before this note was committed. After main moved to
+`697b7018` (`Merge pull request #8`), the branch was rebased and
+`CXX=g++ sh tests/run.sh` was run again. That second run also passed the
+OTA checks from that merge, then the Faith policy checks. This note does
+not change those commands.
 
 ## Policy
 
@@ -22,6 +25,16 @@ Result, verbatim:
 ```
 Reset fixture, device binding, rotation, restart and concurrent replay checks passed
 Host snapshot checks passed
+Faith voice policy checks passed
+Build contract checks passed (manifest and makefiles only; AOSP was not built)
+```
+
+Second run, after the rebase onto `697b7018`, same commands. The OTA lines
+are the checks added by that merge. The ending, verbatim:
+
+```
+ota prototype library checks passed
+OTA signing checks passed
 Faith voice policy checks passed
 Build contract checks passed (manifest and makefiles only; AOSP was not built)
 ```
