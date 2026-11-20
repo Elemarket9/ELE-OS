@@ -158,7 +158,7 @@ This git repository is a device overlay. In an AOSP tree it is checked out at
 | `ele-resource` | Read-only aggregate CPU and memory sampling and advisory policy; host checked, image build not verified. |
 | `ele-status` | In the default image. Local shell snapshot of product name, fingerprint, two patch dates, verified-boot properties, and a memory reading. Not attestation and not proof that patches are complete. |
 | `libele_owner_proof` | Ed25519 check and a one-time challenge session. Host tests only. No device enforces it. |
-| External devices app | Optional experiment in the tree. Camera2 preview of external cameras, and a line about whether the default network reports a satellite transport. Not in the default image, not on the core roadmap, not validated on hardware. |
+| External devices app | Registered in debug Cuttlefish product configuration. Local USB descriptor, audio and display inventory; Camera2 external preview; default network satellite transport reporting. Driver compatibility and device execution are not verified. |
 | Faith | The built-in assistant. Named, not started. No model, no speech engine, and no package in this repository. Default wake phrase "Hey Faith", which the owner can change. |
 
 Lost-device recovery, OTA delivery, the network toggle, TalkBack, Faith, and

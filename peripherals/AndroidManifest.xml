@@ -1,9 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.eleos.peripherals">
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-feature android:name="android.hardware.usb.host" android:required="false"/>
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
-    <application android:label="External devices" android:allowBackup="false"
+    <application android:label="@string/app_name" android:allowBackup="false"
+                 android:supportsRtl="true"
                  android:theme="@android:style/Theme.Material.Light">
         <activity android:name=".DevicesActivity" android:exported="true">
             <intent-filter>
