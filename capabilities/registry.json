@@ -1423,16 +1423,25 @@
       "subsystem": "Security and privacy",
       "functional_requirements": "Use authenticated nonces, counters or timestamps appropriate to each protocol.",
       "architectural_dependencies": "hardware roots where available, OS identity and storage",
-      "implementation_paths": [],
-      "workstream": "Security and privacy",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Replay captured authorized requests; verify rejection without accepting duplicates.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "activation/owner_proof.cpp",
+        "activation/reactivation_session.h",
+        "activation/reactivation_session.cpp",
+        "tests/reactivation.cpp"
       ],
-      "commit_references": []
+      "workstream": "Security and privacy",
+      "integration_interfaces": [
+        "Trusted setup service session API; OpenSSL/BoringSSL Ed25519 and RNG"
+      ],
+      "security_considerations": "Single-use device-bound random challenges, bounded lifetime and retry cooldown; no persistent lockout or hardware-authenticated enrollment integration.",
+      "verification_requirements": "Replay captured authorized requests; verify rejection without accepting duplicates.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Trusted platform enrollment, durable retry state and setup/unlock integration not implemented; platform verification required."
+      ],
+      "commit_references": [
+        "0cf57b654306c2ed2703802bf58c2808d6ab216b"
+      ]
     },
     {
       "id": "EOS-083",
@@ -1466,16 +1475,25 @@
       "subsystem": "Security and privacy",
       "functional_requirements": "Protect unlock and local authentication with secure verifiers and rate limits.",
       "architectural_dependencies": "hardware roots where available, OS identity and storage",
-      "implementation_paths": [],
-      "workstream": "Security and privacy",
-      "integration_interfaces": [],
-      "security_considerations": "Capability-specific threat analysis pending; preserve upstream security boundaries.",
-      "verification_requirements": "Verify attempt throttling, credential changes and authorized recovery.",
-      "status": "Not started",
-      "outstanding_blockers": [
-        "Baseline implementation and upstream integration assessment pending."
+      "implementation_paths": [
+        "activation/owner_proof.cpp",
+        "activation/reactivation_session.h",
+        "activation/reactivation_session.cpp",
+        "tests/reactivation.cpp"
       ],
-      "commit_references": []
+      "workstream": "Security and privacy",
+      "integration_interfaces": [
+        "Trusted setup service session API; OpenSSL/BoringSSL Ed25519 and RNG"
+      ],
+      "security_considerations": "Single-use device-bound random challenges, bounded lifetime and retry cooldown; no persistent lockout or hardware-authenticated enrollment integration.",
+      "verification_requirements": "Verify attempt throttling, credential changes and authorized recovery.",
+      "status": "In development",
+      "outstanding_blockers": [
+        "Trusted platform enrollment, durable retry state and setup/unlock integration not implemented; platform verification required."
+      ],
+      "commit_references": [
+        "0cf57b654306c2ed2703802bf58c2808d6ab216b"
+      ]
     },
     {
       "id": "EOS-085",
