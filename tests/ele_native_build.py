@@ -34,15 +34,40 @@ class NativeTests(unittest.TestCase):
             root = Path(tmp)
             drivers = root / "drivers"
             drivers.mkdir()
+            (root / "include/linux").mkdir(parents=True)
+            (root / "security").mkdir()
+            (root / "security/security.c").write_text(
+                "#include <linux/mm.h>\n"
+                "static unsigned long mmap_prot(struct file *file, unsigned long prot) { return prot; }\n"
+                "int security_mmap_file(struct file *file, unsigned long prot,\n unsigned long flags)\n{ return 0; }\n"
+                "int security_file_mprotect(struct vm_area_struct *vma, unsigned long reqprot,\n unsigned long prot)\n{ return 0; }\n")
             (drivers / "Kconfig").write_text('menu "Device Drivers"\nendmenu\n')
             (drivers / "Makefile").write_text("# original\n")
             b.integrate(root)
+            sec = (root / "security/security.c").read_text()
+            self.assertIn("ele_memguard_denies(mmap_prot(file, prot))", sec)
+            self.assertIn("ele_memguard_denies(prot)", sec)
+            self.assertEqual(sec.count("return -EACCES;"), 2)
+            self.assertTrue((root / "include/linux/ele_memguard.h").is_file())
             self.assertIn('source "drivers/ele/Kconfig"\nendmenu', (drivers / "Kconfig").read_text())
             self.assertIn("obj-$(CONFIG_ELE_PRESSURE) += ele/", (drivers / "Makefile").read_text())
             self.assertEqual((drivers / "ele/ele_pressure.c").read_bytes(),
                              (NATIVE / "pressure/ele_pressure.c").read_bytes())
             with self.assertRaises(ValueError):
                 b.integrate(root)
+
+    def test_guard_refuses_changed_api(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "include/linux").mkdir(parents=True)
+            (root / "security").mkdir()
+            source = root / "security/security.c"
+            original = "#include <linux/mm.h>\nint mmap_prot(void) { return 0; }\n"
+            source.write_text(original)
+            with self.assertRaises(ValueError):
+                b.integrate_guard(root)
+            self.assertEqual(source.read_text(), original)
+            self.assertFalse((root / "include/linux/ele_memguard.h").exists())
 
     def test_newc(self):
         data = s.initramfs(b"test")

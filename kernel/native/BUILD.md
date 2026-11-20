@@ -39,3 +39,14 @@ The native track remains experimental: CPU scheduling, reclaim policy,
 cgroup pressure, GPU/NPU, device drivers, power and thermal integration
 need their own implementation and baseline comparisons. Upstream security
 updates must be evaluated and repinned with tests.
+
+## Security enforcement
+
+ELE-MemSafe denies simultaneous writable/executable mappings via the common
+mmap and mprotect security dispatch path. It does not prevent writable aliases,
+RW-to-RX transitions, or in-kernel compromise. The strict profile may break
+legacy apps or JITs requiring RWX; Android compatibility is not established.
+The build requires signed modules, slab hardening, fortified copies, seccomp,
+zero-on-allocation and hardened usercopy. The QEMU smoke runs denial tests.
+The kernel-generated signing key is development-only and is not distributed;
+production keys, verified boot and rollback protection are separate work.

@@ -18,7 +18,10 @@ COMMON = ("ELE_PRESSURE", "MODULES", "BLK_DEV_INITRD", "DEVTMPFS",
           "PROC_FS", "SYSFS", "PRINTK", "CGROUPS", "MEMCG", "PSI",
           "BPF_SYSCALL", "BPF_UNPRIV_DEFAULT_OFF", "IKCONFIG", "IKCONFIG_PROC",
           "STACKPROTECTOR_STRONG", "STRICT_KERNEL_RWX", "STRICT_MODULE_RWX",
-          "RANDOMIZE_BASE")
+          "RANDOMIZE_BASE", "SECURITY", "SECCOMP", "SECCOMP_FILTER",
+          "HARDENED_USERCOPY", "FORTIFY_SOURCE", "SLAB_FREELIST_RANDOM",
+          "SLAB_FREELIST_HARDENED", "INIT_ON_ALLOC_DEFAULT_ON",
+          "MODULE_SIG", "MODULE_SIG_FORCE", "MODULE_SIG_ALL", "MODULE_SIG_SHA256")
 ARCH_FLAGS = {"x86_64": ("SERIAL_8250", "SERIAL_8250_CONSOLE"),
               "arm64": ("SERIAL_AMBA_PL011", "SERIAL_AMBA_PL011_CONSOLE")}
 
@@ -65,6 +68,37 @@ def check_source(source):
         raise ValueError("source checkout must be clean")
 
 
+def integrate_guard(source):
+    """Patch the common LSM dispatch path; no optional LSM selection bypass."""
+    security = source / "security/security.c"
+    header = source / "include/linux/ele_memguard.h"
+    text = security.read_text()
+    if header.exists() or "ele_memguard.h" in text:
+        raise ValueError("ELE memory guard already present")
+    # Match exact function signatures, permitting upstream whitespace only.
+    # If upstream changes the API, stop rather than silently omit enforcement.
+    hooks = (
+        (r"(int\s+security_mmap_file\s*\(\s*struct file \*file,\s*unsigned long prot,\s*unsigned long flags\s*\)\s*\{)",
+         "mmap_prot(file, prot)"),
+        (r"(int\s+security_file_mprotect\s*\(\s*struct vm_area_struct \*vma,\s*unsigned long reqprot,\s*unsigned long prot\s*\)\s*\{)",
+         "prot"),
+    )
+    if not re.search(r"\bmmap_prot\s*\(", text):
+        raise ValueError("effective mmap protection helper missing")
+    for pattern, protection in hooks:
+        text, count = re.subn(pattern, lambda m: m[0] +
+                             "\n\tif (ele_memguard_denies(" + protection +
+                             "))\n\t\treturn -EACCES;\n", text)
+        if count != 1:
+            raise ValueError("unexpected upstream security hook signature")
+    include = "#include <linux/ele_memguard.h>\n"
+    first = re.search(r"^#include\s+", text, re.M)
+    if first is None:
+        raise ValueError("security includes not found")
+    header.write_bytes((HERE / "security/ele_memguard.h").read_bytes())
+    security.write_text(text[:first.start()] + include + text[first.start():])
+
+
 def integrate(source):
     target = source / "drivers/ele"
     if target.exists():
@@ -76,6 +110,7 @@ def integrate(source):
     if marker in original or original.count("\nendmenu") < 1:
         raise ValueError("unexpected upstream drivers/Kconfig structure")
     before, after = original.rsplit("\nendmenu", 1)
+    integrate_guard(source)
     target.mkdir()
     for name in ("ele_pressure.c", "ele_pressure_policy.h"):
         shutil.copyfile(HERE / "pressure" / name, target / name)
@@ -144,7 +179,8 @@ def build(source, output, arch, jobs, cross):
             shutil.copyfile(work / "COPYING", stage / "COPYING")
             inputs = {name: sha(HERE / name) for name in
                       ("upstream.json", "build.py", "Kconfig",
-                       "pressure/ele_pressure.c", "pressure/ele_pressure_policy.h")}
+                       "pressure/ele_pressure.c", "pressure/ele_pressure_policy.h",
+                       "security/ele_memguard.h")}
             files = {str(p.relative_to(stage)): sha(p) for p in sorted(stage.rglob("*"))
                      if p.is_file() and not p.is_symlink()}
             (stage / "ele-build.json").write_text(json.dumps({
